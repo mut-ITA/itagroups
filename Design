@@ -1,0 +1,16 @@
+|-Login (Google Login)
+|-Search groups
+	|- Tags + Name 
+|-New group
+	|- Name Group (ie.: O grupo legal)
+	|- Alias (ita_alias) (i.: glgl => _ita_glgl@googlegroups.com) (@itagroups??)
+	|- Tags Group (coisas legais)
+	|- Description Group ("Um grupo que faz coisas legais")
+|-Show groups
+	|-Enter Group
+	|-Leave group
+	|-Manage Group
+		|- Show People
+		|- Remove People
+		|- Delete Group
+|- Google API
