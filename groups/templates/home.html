@@ -7,7 +7,6 @@
         font-size: 30px;
     }
     section.hidden {
-
         position: fixed;
     }
     section article.popup {
@@ -37,7 +36,6 @@
             <form>
                 <input type="text" name="search_group" id="id_search_group" />
                 <button type="submit" id="id_search_button"> Pesquisar </button> 
-                {% csrf_token %}
             </form>
         </div>
         <span class="createGroup">
@@ -75,10 +73,10 @@
         </section>
         <br>
         <br>
-        <table id="id_search_list   ">
-            <!--{% for item in items %}
-            <tr><td>{{ forloop.counter }}: {{ item.text }}</td></tr>
-            {% endfor %}-->
+        <table id="id_search_list">
+            {% for group in groups %}
+            <tr><td>{{ forloop.counter }}: {{ group.name }}</td></tr>
+            {% endfor %}
         </table>
     </body>
 

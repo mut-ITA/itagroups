@@ -38,6 +38,9 @@ class CreateGroupTest(TestCase):
 		self.assertIn('New group tags', response.content.decode())
 		self.assertIn('New group description', response.content.decode())
 
+		#self.assertEqual(response.status_code, 302)
+		#self.assertEqual(response['location'], '/')
+
 	def test_create_group_POST_save_to_db(self):
 		request = HttpRequest()
 		request.method = 'POST'
