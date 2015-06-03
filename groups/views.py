@@ -21,12 +21,12 @@ def home_page(request):
 			'group_description': group.description
 			})
 	if request.method == 'GET':
-		search_tags = request.GET.get('search_group','')
-		found_groups = search_groups(search_tags)
-
-		return render(request, 'home.html', {
-			'groups': found_groups
-			})
+		search_tags = request.GET.get('search_group', '')
+		if search_tags != '':
+			found_groups = search_groups(search_tags)
+			return render(request, 'home.html', {
+				'groups': found_groups
+				})
 
 	return render(request, 'home.html')
 
@@ -41,12 +41,10 @@ def search_groups(search_tags):
 	found_groups = []
 	for g in all_groups:
 		for tag in search_tags.split(' '):
-			#if g.name.find(tag) > 0:
-			#	found_groups.add(g)
-			#	continue
-			if tag in [t.strip() for t in g.tags.split(';')]:
+			if tag.lower() in [t.strip().lower() for t in g.tags.split(';')]:
 				found_groups.append(g)
 				continue
+
 	return found_groups
 
 

@@ -3,7 +3,7 @@ from django.test import TestCase
 from django.http import HttpRequest
 from django.template.loader import render_to_string
 
-from groups.views import home_page
+from groups.views import home_page, search_groups
 from groups.models import Group
 
 # Create your tests here.
@@ -61,16 +61,7 @@ class CreateGroupTest(TestCase):
 class GroupModelTest(TestCase):
 
 	def test_saving_and_retrieving_groups(self):
-		first_group = Group()
-		first_group.name = 'Teh name'
-		first_group.alias = 'Tehalias'
-		first_group.tags = 'Teh tags'
-		first_group.description = 'Teh description' 
-		first_group.save()
-
-		second_group = Group()
-		second_group.name = 'Teh name2'
-		second_group.save()
+		create_sample_database()
 
 		saved_groups = Group.objects.all()
 		self.assertEqual(saved_groups.count(), 2)
@@ -78,7 +69,87 @@ class GroupModelTest(TestCase):
 		first_saved_group = saved_groups[0]
 		second_saved_group = saved_groups[1]
 		self.assertEqual(first_saved_group.name, 'Teh name')
-		self.assertEqual(first_saved_group.alias, 'Tehalias')
-		self.assertEqual(first_saved_group.tags, 'Teh tags')
+		self.assertEqual(first_saved_group.alias, 'tehalias')
+		self.assertEqual(first_saved_group.tags, 'Teh; tags')
 		self.assertEqual(first_saved_group.description, 'Teh description')
 		self.assertEqual(second_saved_group.name, 'Teh name2')
+
+
+class SearchTests(TestCase):
+
+	def test_only_displays_GET_on_search(self):
+		first_group = Group()
+		first_group.name = 'Teh empty tag'
+		first_group.alias = 'tehalias'
+		first_group.tags = ''
+		first_group.description = 'Teh empty description' 
+		first_group.save()
+
+		request = HttpRequest()
+		request.method = 'GET'
+		response = home_page(request)	
+
+		self.assertNotIn('Teh empty tag', response.content.decode())
+
+	# def test_search_by_name(self):
+	# 	create_sample_database()
+	# 	search_groups()
+	def test_search_by_tag(self):
+		create_sample_database()
+
+		# Testing if don't find substrings inside tags
+		found_groups = search_groups('tags')
+		self.assertEqual(len(found_groups), 1)
+		self.assertEqual(found_groups[0].alias, 'tehalias')
+
+		# Testing search 1 tag in multiple groups
+		found_groups = search_groups('Teh')
+		self.assertEqual(len(found_groups), 2)
+		self.assertTrue('tehalias' in [a.alias for a in found_groups])
+		self.assertTrue('tehalias2' in [a.alias for a in found_groups])
+
+	def test_search_case_insensitive(self):
+		create_sample_database()
+
+		found_groups = search_groups('teh')
+		self.assertEqual(len(found_groups), 2)
+		self.assertTrue('tehalias' in [a.alias for a in found_groups])
+		self.assertTrue('tehalias2' in [a.alias for a in found_groups])
+
+		#Test priority for tags
+
+	# def test_search_by_alias(self):
+	# 	create_sample_database()
+
+	# 	# Testing if don't find substrings inside alias
+	# 	found_groups = search_groups('hal')
+	# 	self.assertEqual(len(found_groups), 0)
+
+	# 	# Testing search 1 alias in multiple groups
+	# 	found_groups = search_groups('tehalias')
+	# 	self.assertEqual(len(found_groups), 1)
+	# 	self.assertTrueEqual('tehalias' in [a.alias for a in found_groups])
+
+
+
+
+
+
+
+
+def create_sample_database():
+	first_group = Group()
+	first_group.name = 'Teh name'
+	first_group.alias = 'tehalias'
+	first_group.tags = 'Teh; tags'
+	first_group.description = 'Teh description' 
+	first_group.save()
+
+	second_group = Group()
+	second_group.name = 'Teh name2'
+	second_group.alias = 'tehalias2'
+	second_group.tags = 'Teh; tags2'
+	second_group.description = 'Teh description 2'
+	second_group.save()	
+
+

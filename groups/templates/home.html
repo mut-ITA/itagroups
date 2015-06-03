@@ -37,10 +37,34 @@
                 <input type="text" name="search_group" id="id_search_group" />
                 <button type="submit" id="id_search_button"> Pesquisar </button> 
             </form>
-        </div>
+        </div>   
+
+        <br>
+        <br>
+
+        <table id="id_search_list">
+            {% if groups %}
+            <tr>
+                <td> # </td>
+                <td> Name </td>
+                <td> Alias</td>
+                <td> Description </td>
+            </tr>
+            {% endif %}
+            {% for group in groups %}
+            <tr>
+                <td> {{ forloop.counter }} </td>
+                <td> {{ group.name }} </td>
+                <td> {{ group.alias }}</td>
+                <td> {{ group.description }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        
         <span class="createGroup">
             <button type="button" id="id_create_group">Criar Grupo</button>
-        </span>
+        </span> 
+
         <section class="hidden" id='id_popup'>
             <article class="popup" >
                 <p>
@@ -53,7 +77,6 @@
                             Tags: {{group_tags}}
                             <br>
                             Description: {{group_description}}
-
                         </div>
                     {% else %}    
                     <form method="POST">
@@ -71,13 +94,6 @@
                 </p>
             </article>
         </section>
-        <br>
-        <br>
-        <table id="id_search_list">
-            {% for group in groups %}
-            <tr><td>{{ forloop.counter }}: {{ group.name }}</td></tr>
-            {% endfor %}
-        </table>
     </body>
 
     <!-- JQUERY SETUP -->    

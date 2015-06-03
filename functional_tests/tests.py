@@ -78,7 +78,10 @@ class NewVisitorTest(LiveServerTestCase):
 		# Tal elemento é o grupo criado recentemente pelo outro aluno
 		table 	= self.browser.find_element_by_id('id_search_list')
 		rows = table.find_elements_by_tag_name('tr')
-		self.assertIn('Testadores no H8', [row.text for row in rows])
+		columns = []
+		for r in rows:
+			columns += r.find_elements_by_tag_name('td')
+		self.assertIn('Testadores no H8', [col.text for col in columns])
 
 		# Gustavo observa a pagina e clica no link para ver mais detalhes sobre o grupo 
 
