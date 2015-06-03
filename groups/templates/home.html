@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en" class="no-js">
+<head>
 <title>Grupos ITA</title>
 <style type="text/css">
     span.createGroup {
         font-size: 30px;
     }
     section.hidden {
+
         position: fixed;
     }
     section article.popup {
@@ -31,28 +33,53 @@
 </head>
     <body>
         <h1> Grupos de Email do ITA </h1>
-
+        <div>
+            <form>
+                <input type="text" name="search_group" id="id_search_group" />
+                <button type="submit" id="id_search_button"> Pesquisar </button> 
+                {% csrf_token %}
+            </form>
+        </div>
         <span class="createGroup">
             <button type="button" id="id_create_group">Criar Grupo</button>
         </span>
-     
         <section class="hidden" id='id_popup'>
             <article class="popup" >
-                <span class="close">X</span>
                 <p>
-                    <form method="POST" action="/newgroup">
+                    {% if group_success %}
+                        <div>
+                            {{ group_name }} criado com sucesso!
+                            <br>
+                            Alias: {{group_alias}}
+                            <br>
+                            Tags: {{group_tags}}
+                            <br>
+                            Description: {{group_description}}
+
+                        </div>
+                    {% else %}    
+                    <form method="POST">
                         <pre>
-                            <div>Nome:          <input name="group_name" id="id_group_name"></div>
-                            <div>Alias:         <input name="group_alias" id="id_group_alias" placeholder="itagroups_alias@googlegroups.com"></div>
-                            <div>Tags:          <input name="group_tags" id="id_group_tags" placeholder="Tags; separadas; por; ponto-e-virgula;"></div>
-                            <div>Description:   <input type="text" name="group_description" id="id_group_description"></div>
-                            <div>                        <button type="submit" id = "id_create_new_group"> Criar </div>
+                                                    <span class="close">X</span>
+                            <div>Nome:          <input name="group_name" id="id_group_name" /></div>
+                            <div>Alias:         <input name="group_alias" id="id_group_alias" placeholder="itagroups_alias@googlegroups.com" /></div>
+                            <div>Tags:          <input name="group_tags" id="id_group_tags" placeholder="Tags; separadas; por; ponto-e-virgula;" /></div>
+                            <div>Description:   <input type="text" name="group_description" id="id_group_description" /></div>
+                            <div>                        <button type="submit" id="id_create_new_group"> Criar </button></div>
                             {% csrf_token %}
                         </pre>
                     </form>
+                    {% endif %}
                 </p>
             </article>
         </section>
+        <br>
+        <br>
+        <table id="id_search_list   ">
+            <!--{% for item in items %}
+            <tr><td>{{ forloop.counter }}: {{ item.text }}</td></tr>
+            {% endfor %}-->
+        </table>
     </body>
 
     <!-- JQUERY SETUP -->    

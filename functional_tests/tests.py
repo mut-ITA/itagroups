@@ -64,6 +64,8 @@ class NewVisitorTest(LiveServerTestCase):
 		## Abrimos outro browser para simular o fato de ser um novo usuario
 		self.browser.quit()
 		self.browser = webdriver.Firefox()
+		self.browser.get(self.live_server_url)
+		self.browser.implicitly_wait(3)
 
 		# Ele entra no site e visualiza uma caixa de texto com um botao de pesquisa do lado
 		search_input = self.browser.find_element_by_id('id_search_group')
