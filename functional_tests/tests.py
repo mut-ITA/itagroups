@@ -26,20 +26,14 @@ class NewVisitorTest(LiveServerTestCase):
 		# Ele observa a pagina encontra o botao de criar um novo grupo
 		create_group_button = self.browser.find_element_by_id('id_create_group')		
 		self.assertEqual(
-			create_group_button.get_attrinbute('type'),
+			create_group_button.get_attribute('type'),
 			'button'			
 			)
-		self.assertEqual(
-			create_group_button.text,
-			'Criar Grupo'
-			)
 
-		# Ele pressiona o botao e é redirecionado para uma nova pagina de criacao de grupo
-		create_group_button.click()
-		new_url = self.browser.current_url
-		self.assertEqual(new_url, '/newgroup/')
+		# Ele pressiona o botao e surge um formulario para a criacao de grupo
 
-		# Ele observa a nova pagina e a preenche conforme o desejado:
+
+		# Ele observa o formulario e o preenche conforme o desejado:
 		# nome: Testadores do H8
 		group_name_input = self.browser.find_element_by_id('id_group_name')
 		group_name_input.send_keys("Testadores no H8")
@@ -57,15 +51,12 @@ class NewVisitorTest(LiveServerTestCase):
 		group_description_input.send_keys("Um grupo maneiro de aprender a testar")
 
 		# Apos escrever o que desejava, conferiu e pressionou o botao de criar novo grupo.
-		create_group_button = self.browser.find_element_by_id('id_create_group')		
+		create_group_button = self.browser.find_element_by_id('id_create_new_group')		
 		self.assertEqual(
-			create_group_button.get_attrinbute('type'),
-			'button'			
+			create_group_button.get_attribute('type'),
+			'submit'			
 			)
-		self.assertEqual(
-			create_group_button.text,
-			'Criar Grupo'
-			)
+		create_group_button.click()
 
 		# Acreditando que o grupo foi criado corretamente, ele saiu da pagina
 		# Outro usuario, Mutante, entra no site querendo entrar num grupo de testadores
@@ -75,11 +66,18 @@ class NewVisitorTest(LiveServerTestCase):
 		self.browser = webdriver.Firefox()
 
 		# Ele entra no site e visualiza uma caixa de texto com um botao de pesquisa do lado
-		# Interessado em aprender TDD, Gustavo entra com "TDD" na barra de pesquisa
+		search_input = self.browser.find_element_by_id('id_search_group')
+		search_button = self.browser.find_element_by_id('id_search_button')
+		# Interessado em aprender TDD, Gustavo entra com "TDD" na barra de pesquisa e aperta o botao
+		search_input.send_keys("TDD")
+		search_button.click()
 
 		# A pagina atualiza, agora mostrando uma lista de grupos com apenas um elemento        
 		# Tal elemento é o grupo criado recentemente pelo outro aluno
-		
+		table = self.browser.find_element_by_id('id_search_list')
+		rows = table.find_elements_by_tag_name('tr')
+		self.assertIn('Testadores do H8', [row.text for row in rows])
+
 		# Gustavo observa a pagina e clica no link para ver mais detalhes sobre o grupo 
 
 		# Apos ser redirecionado para a pagina do grupo, Gustavo, satisfeito com a descricao,
@@ -88,4 +86,4 @@ class NewVisitorTest(LiveServerTestCase):
 		# Confiando no funcionamento do site, Gustavo volta às suas atividades
 
 
-		self.fail("Finish the test!")
+		self.fail("Finish the test! Add Popup!")
