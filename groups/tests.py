@@ -38,6 +38,23 @@ class CreateGroupTest(TestCase):
 		self.assertIn('New group tags', response.content.decode())
 		self.assertIn('New group description', response.content.decode())
 
+	def test_create_group_POST_save_to_db(self):
+		request = HttpRequest()
+		request.method = 'POST'
+		request.POST['group_name'] = 'New group name'
+		request.POST['group_alias'] = 'Newgroupalias'
+		request.POST['group_tags'] = 'New group tags'
+		request.POST['group_description'] = 'New group description'
+
+		response = home_page(request)
+
+		self.assertEqual(Group.objects.count(), 1)
+		new_group = Group.objects.first()
+		self.assertEqual(new_group.name, 'New group name')
+		self.assertEqual(new_group.alias, 'Newgroupalias')
+		self.assertEqual(new_group.tags, 'New group tags')
+		self.assertEqual(new_group.description, 'New group description')
+
 class GroupModelTest(TestCase):
 
 	def test_saving_and_retrieving_groups(self):
