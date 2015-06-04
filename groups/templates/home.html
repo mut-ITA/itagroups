@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" class="no-js">
+    <!-- JQUERY SETUP -->    
+<script type="text/javascript" src="{{ STATIC_URL }} /static/jquery-1.11.3.min.js"></script>
 <head>
 <title>Grupos ITA</title>
 <style type="text/css">
@@ -32,6 +34,11 @@
 </head>
     <body>
         <h1> Grupos de Email do ITA </h1>
+        <span class="chat">
+            Projeto Paralelo: <button type="button">CHAT!</button>
+        </span> 
+
+        <br> 
         <div>
             <form>
                 <input type="text" name="search_group" id="id_search_group" />
@@ -60,28 +67,53 @@
             </tr>
             {% endfor %}
         </table>
-        
+
         <span class="createGroup">
             <button type="button" id="id_create_group">Criar Grupo</button>
         </span> 
+
+        
+         {% if group_success %}
+            <script>
+                $(document).ready(function()
+                {
+                    //alert("Success");
+                    var hiddenSection = $('section.hidden');
+                    hiddenSection.fadeIn()
+                    // unhide section.hidden
+                    .css({ 'display':'block' })
+                    // set to full screen
+                    .css({ width: $(window).width() + 'px', height: $(window).height() + 'px' })
+                    .css({ top:($(window).height() - hiddenSection.height())/2 + 'px',
+                        left:($(window).width() - hiddenSection.width())/2 + 'px' })
+                    // greyed out background
+                    .css({ 'background-color': 'rgba(0,0,0,0.5)' })
+                    .appendTo('body');
+                    // console.log($(window).width() + ' - ' + $(window).height());
+                    $('span.close').click(function(){ $(hiddenSection).fadeOut(); document.location.href="/";});
+                });
+            </script>
+        {% endif %}
+
 
         <section class="hidden" id='id_popup'>
             <article class="popup" >
                 <p>
                     {% if group_success %}
+
                         <div>
-                            {{ group_name }} criado com sucesso!
-                            <br>
-                            Alias: {{group_alias}}
-                            <br>
-                            Tags: {{group_tags}}
-                            <br>
-                            Description: {{group_description}}
+                            <pre>
+                                                <span class="close">X</span>
+                            <div>{{ group_name }} criado com sucesso!          </div>
+                            <div>Alias: {{group_alias}}        </div>
+                            <div>Tags: {{group_tags}}          </div>
+                            <div>Description: {{group_description}}   </div>
+                            </pre>
                         </div>
                     {% else %}    
                     <form method="POST">
                         <pre>
-                                                    <span class="close">X</span>
+                                                <span class="close">X</span>
                             <div>Nome:          <input name="group_name" id="id_group_name" /></div>
                             <div>Alias:         <input name="group_alias" id="id_group_alias" placeholder="itagroups_alias@googlegroups.com" /></div>
                             <div>Tags:          <input name="group_tags" id="id_group_tags" placeholder="Tags; separadas; por; ponto-e-virgula;" /></div>
@@ -96,8 +128,9 @@
         </section>
     </body>
 
-    <!-- JQUERY SETUP -->    
-    <script type="text/javascript" src="{{ STATIC_URL }} /static/jquery-1.11.3.min.js"></script>
+
+
+
 
     <script>
         $(document).ready(function(){     
@@ -115,7 +148,7 @@
                         .css({ 'background-color': 'rgba(0,0,0,0.5)' })
                         .appendTo('body');
                         // console.log($(window).width() + ' - ' + $(window).height());
-                        $('span.close').click(function(){ $(hiddenSection).fadeOut(); });
+                        $('span.close').click(function(){ $(hiddenSection).fadeOut(); document.location.href="/";});
                 });
             });     
         });

@@ -33,7 +33,7 @@ def home_page(request):
 
 
 def search_groups(search_tags):
-	all_groups = Group.objects.all()\
+	all_groups = Group.objects.all()
 	#Add priority
 	#for g in all_groups:
 	#	g.priority = 0
@@ -42,6 +42,12 @@ def search_groups(search_tags):
 	for g in all_groups:
 		for tag in search_tags.split(' '):
 			if tag.lower() in [t.strip().lower() for t in g.tags.split(';')]:
+				found_groups.append(g)
+				continue
+			if tag.lower() == g.alias:
+				found_groups.append(g)
+				continue
+			if tag.lower() in [t.strip().lower() for t in g.description.split(' ')]:
 				found_groups.append(g)
 				continue
 

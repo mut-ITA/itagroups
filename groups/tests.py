@@ -91,9 +91,21 @@ class SearchTests(TestCase):
 
 		self.assertNotIn('Teh empty tag', response.content.decode())
 
-	# def test_search_by_name(self):
-	# 	create_sample_database()
-	# 	search_groups()
+	def test_search_by_name(self):
+		create_sample_database()
+
+		#Testing if find substrings inside Name
+		found_groups = search_groups('ame')
+		self.assertEqual(len(found_groups), 2)
+		self.assertTrue('tehalias' in [a.alias for a in found_groups])
+		self.assertTrue('tehalias2' in [a.alias for a in found_groups])
+
+
+	 	#Testing if find strings inside Name
+		found_groups = search_groups('Name')
+		self.assertEqual(len(found_groups), 1)
+		self.assertTrue('tehalias' in [a.alias for a in found_groups])
+
 	def test_search_by_tag(self):
 		create_sample_database()
 
@@ -118,23 +130,31 @@ class SearchTests(TestCase):
 
 		#Test priority for tags
 
-	# def test_search_by_alias(self):
-	# 	create_sample_database()
+	def test_search_by_alias(self):
+		create_sample_database()
 
-	# 	# Testing if don't find substrings inside alias
-	# 	found_groups = search_groups('hal')
-	# 	self.assertEqual(len(found_groups), 0)
+		# Testing if don't find substrings inside alias
+		found_groups = search_groups('hal')
+		self.assertEqual(len(found_groups), 0)
 
-	# 	# Testing search 1 alias in multiple groups
-	# 	found_groups = search_groups('tehalias')
-	# 	self.assertEqual(len(found_groups), 1)
-	# 	self.assertTrueEqual('tehalias' in [a.alias for a in found_groups])
-
-
+		# Testing search 1 alias in multiple groups
+		found_groups = search_groups('tehalias')
+		self.assertEqual(len(found_groups), 1)
+		self.assertTrue('tehalias' in [a.alias for a in found_groups])
 
 
+	#Search by description
+	def test_search_by_description(self):
+		create_sample_database()
 
+		# Testing if don't find substrings inside descrption
+		found_groups = search_groups('crip')
+		self.assertEqual(len(found_groups), 0)
 
+		# Testing search 1 alias in multiple groups
+		found_groups = search_groups('description')
+		self.assertEqual(len(found_groups), 1)
+		self.assertTrue('tehalias' in [a.alias for a in found_groups])
 
 
 def create_sample_database():
@@ -149,7 +169,7 @@ def create_sample_database():
 	second_group.name = 'Teh name2'
 	second_group.alias = 'tehalias2'
 	second_group.tags = 'Teh; tags2'
-	second_group.description = 'Teh description 2'
+	second_group.description = 'Teh description2'
 	second_group.save()	
 
 
