@@ -39,7 +39,7 @@ def home_page(request):
 
 
 
-def search_groups(search_tags):
+def search_groups(search_tags):	
 	all_groups = Group.objects.all()
 	#Add priority
 	#for g in all_groups:
@@ -48,24 +48,22 @@ def search_groups(search_tags):
 	found_groups = []
 	for g in all_groups:
 		for tag in search_tags.split(' '):
-			for t in g.name.split(' '):
-				if t.strip().lower().find(tag.lower()) != -1:
-					if not g in found_groups:
-						found_groups.append(g)
-				continue
-			#Search search_tags in tags; alias; description
+			# Search in name (can be substring)
+			if g.name.strip().lower().find(tag.lower()) != -1:
+				found_groups.append(g)
+				break
+			# Search in tags
 			if tag.lower() in [t.strip().lower() for t in g.tags.split(';')]:
-				if not g in found_groups:
-						found_groups.append(g)
-				continue
+				found_groups.append(g)
+				break
+			# Search in alias
 			if tag.lower() == g.alias:
-				if not g in found_groups:
-						found_groups.append(g)
-				continue
-			if tag.lower() in [t.strip().lower() for t in g.description.split(' ')]:
-				if not g in found_groups:
-						found_groups.append(g)
-				continue
+				found_groups.append(g)
+				break
+			# Search in description
+			if tag.lower() in [d.strip().lower() for d in g.description.split(' ')]:
+				found_groups.append(g)
+				break
 
 	return found_groups
 

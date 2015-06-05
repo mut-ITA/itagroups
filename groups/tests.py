@@ -24,7 +24,7 @@ class HomePageTest(TestCase):
 class CreateGroupTest(TestCase):
 
 	def test_create_group_form_can_save_POST(self):
-		request = create_sample_request()
+		request = create_sample_POST_request()
 
 		response = home_page(request)
 
@@ -37,7 +37,7 @@ class CreateGroupTest(TestCase):
 		#self.assertEqual(response['location'], '/')
 
 	def test_create_group_POST_save_to_db(self):
-		request = create_sample_request()
+		request = create_sample_POST_request()
 
 		response = home_page(request)
 
@@ -50,7 +50,7 @@ class CreateGroupTest(TestCase):
 
 	def test_create_group_correct_name(self):
 		#Only restriction: < 27 characters
-		request = create_sample_request()
+		request = create_sample_POST_request()
 		
 		request.POST['group_name'] = 'Newgroupnamewith28characters'
 
@@ -76,6 +76,17 @@ class GroupModelTest(TestCase):
 
 
 class SearchTests(TestCase):
+
+	def test_GET_searchs_for_something(self):
+		create_sample_database()
+
+		request = HttpRequest()
+		request.method = 'GET'
+		request.GET['search_group'] = ' '
+
+		response = home_page(request)
+
+		self.assertIn('Teh name', response.content.decode())
 
 	def test_only_displays_GET_on_search(self):
 		first_group = Group()
@@ -172,7 +183,7 @@ def create_sample_database():
 	second_group.description = 'Teh description2'
 	second_group.save()	
 
-def create_sample_request():
+def create_sample_POST_request():
 	request = HttpRequest()
 	request.method = 'POST'
 	request.POST['group_name'] = 'New group name'
