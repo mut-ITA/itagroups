@@ -5,7 +5,13 @@ from groups.models import Group
 
 def home_page(request):
 	if request.method == 'POST':
-		#Verificacoes
+		#Verifications
+		if len(request.POST['group_name']) > 27:
+			return render(request, 'home.html', {
+				'group_success': False,
+				'open_popup': True,
+				'group_name_error_message': 'O nome do grupo não deve possuir mais de 27 caracteres'
+				})
 		group = Group()
 		group.name = request.POST['group_name']
 		group.alias = request.POST['group_alias']
@@ -14,7 +20,8 @@ def home_page(request):
 		group.save()
 
 		return render(request, 'home.html', {
-			'group_success': True, 
+			'group_success': True,
+			'open_popup': True, 
 			'group_name': group.name,
 			'group_tags': group.tags,
 			'group_alias': group.alias,
@@ -41,14 +48,23 @@ def search_groups(search_tags):
 	found_groups = []
 	for g in all_groups:
 		for tag in search_tags.split(' '):
+			for t in g.name.split(' '):
+				if t.strip().lower().find(tag.lower()) != -1:
+					if not g in found_groups:
+						found_groups.append(g)
+				continue
+			#Search search_tags in tags; alias; description
 			if tag.lower() in [t.strip().lower() for t in g.tags.split(';')]:
-				found_groups.append(g)
+				if not g in found_groups:
+						found_groups.append(g)
 				continue
 			if tag.lower() == g.alias:
-				found_groups.append(g)
+				if not g in found_groups:
+						found_groups.append(g)
 				continue
 			if tag.lower() in [t.strip().lower() for t in g.description.split(' ')]:
-				found_groups.append(g)
+				if not g in found_groups:
+						found_groups.append(g)
 				continue
 
 	return found_groups

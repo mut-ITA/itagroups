@@ -24,12 +24,7 @@ class HomePageTest(TestCase):
 class CreateGroupTest(TestCase):
 
 	def test_create_group_form_can_save_POST(self):
-		request = HttpRequest()
-		request.method = 'POST'
-		request.POST['group_name'] = 'New group name'
-		request.POST['group_alias'] = 'Newgroupalias'
-		request.POST['group_tags'] = 'New group tags'
-		request.POST['group_description'] = 'New group description'
+		request = create_sample_request()
 
 		response = home_page(request)
 
@@ -42,12 +37,7 @@ class CreateGroupTest(TestCase):
 		#self.assertEqual(response['location'], '/')
 
 	def test_create_group_POST_save_to_db(self):
-		request = HttpRequest()
-		request.method = 'POST'
-		request.POST['group_name'] = 'New group name'
-		request.POST['group_alias'] = 'Newgroupalias'
-		request.POST['group_tags'] = 'New group tags'
-		request.POST['group_description'] = 'New group description'
+		request = create_sample_request()
 
 		response = home_page(request)
 
@@ -57,6 +47,16 @@ class CreateGroupTest(TestCase):
 		self.assertEqual(new_group.alias, 'Newgroupalias')
 		self.assertEqual(new_group.tags, 'New group tags')
 		self.assertEqual(new_group.description, 'New group description')
+
+	def test_create_group_correct_name(self):
+		#Only restriction: < 27 characters
+		request = create_sample_request()
+		
+		request.POST['group_name'] = 'Newgroupnamewith28characters'
+
+		response = home_page(request)
+
+		self.assertEqual(Group.objects.count(), 0)
 
 class GroupModelTest(TestCase):
 
@@ -103,7 +103,7 @@ class SearchTests(TestCase):
 
 	 	#Testing if find strings inside Name
 		found_groups = search_groups('Name')
-		self.assertEqual(len(found_groups), 1)
+		self.assertEqual(len(found_groups), 2)
 		self.assertTrue('tehalias' in [a.alias for a in found_groups])
 
 	def test_search_by_tag(self):
@@ -172,4 +172,12 @@ def create_sample_database():
 	second_group.description = 'Teh description2'
 	second_group.save()	
 
+def create_sample_request():
+	request = HttpRequest()
+	request.method = 'POST'
+	request.POST['group_name'] = 'New group name'
+	request.POST['group_alias'] = 'Newgroupalias'
+	request.POST['group_tags'] = 'New group tags'
+	request.POST['group_description'] = 'New group description'
 
+	return request
