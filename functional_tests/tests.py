@@ -83,12 +83,53 @@ class NewVisitorTest(LiveServerTestCase):
 			columns += r.find_elements_by_tag_name('td')
 		self.assertIn('Testadores no H8', [col.text for col in columns])
 
+
 		# Gustavo observa a pagina e clica no link para ver mais detalhes sobre o grupo 
 
 		# Apos ser redirecionado para a pagina do grupo, Gustavo, satisfeito com a descricao,
 		# pressiona o botao de entrar no grupo
         
 		# Confiando no funcionamento do site, Gustavo volta às suas atividades
+
+		## Abrimos outro browser para simular o fato de ser um novo usuario
+		self.browser.quit()
+		self.browser = webdriver.Firefox()
+		self.browser.get(self.live_server_url)
+		self.browser.implicitly_wait(3)
+
+		#Chico resolveu criar um grupo para a AnimITA
+
+		# Chico observa o formulario e o preenche conforme o desejado:
+		# nome: Testadores do H8
+		group_name_input = self.browser.find_element_by_id('id_group_name')
+		group_name_input.send_keys("ANIMITA 1337 MUITO GRANDE MAIS DE 27 ARROBA")
+
+		# alias: h8testers
+		group_alias_input = self.browser.find_element_by_id('id_group_alias')
+		group_alias_input.send_keys("ANIMITA COM ESPACO")
+
+		# tags: TDD, test
+		group_tags_input = self.browser.find_element_by_id('id_group_tags')
+		group_tags_input.send_keys("TDD; test;")
+
+		# description: Um grupo maneiro de aprender a testar
+		group_description_input = self.browser.find_element_by_id('id_group_description')
+		group_description_input.send_keys("Um grupo maneiro de aprender a testar")
+
+		# Apos escrever o que desejava, conferiu e pressionou o botao de criar novo grupo.
+		create_group_button = self.browser.find_element_by_id('id_create_new_group')		
+		self.assertEqual(
+			create_group_button.get_attribute('type'),
+			'submit'			
+			)
+		create_group_button.click()
+
+
+		#Assim, percebeu que seu grupo não foi criado, pois haviam algumas restrições na página
+
+		
+
+
 
 
 		self.fail("Finish the test! Add Popup!")

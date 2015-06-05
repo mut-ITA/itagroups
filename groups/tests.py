@@ -30,7 +30,7 @@ class CreateGroupTest(TestCase):
 		response = home_page(request)
 
 		self.assertIn('New group name', response.content.decode())
-		self.assertIn('Newgroupalias', response.content.decode())
+		self.assertIn('newgroupalias', response.content.decode())
 		self.assertIn('New group tags', response.content.decode())
 		self.assertIn('New group description', response.content.decode())
 
@@ -45,7 +45,7 @@ class CreateGroupTest(TestCase):
 		self.assertEqual(Group.objects.count(), 1)
 		new_group = Group.objects.first()
 		self.assertEqual(new_group.name, 'New group name')
-		self.assertEqual(new_group.alias, 'Newgroupalias')
+		self.assertEqual(new_group.alias, 'newgroupalias')
 		self.assertEqual(new_group.tags, 'New group tags')
 		self.assertEqual(new_group.description, 'New group description')
 
@@ -58,6 +58,27 @@ class CreateGroupTest(TestCase):
 		response = home_page(request)
 
 		self.assertEqual(Group.objects.count(), 0)
+
+	def test_create_group_correct_alias(self):
+		#Restrictions: No upper case allowed, no symbols, no spaces, <20 characters
+		request = create_sample_POST_request()
+
+		request.POST['group_alias'] = 'UPPERCASETEST'
+		response = home_page(request)
+		self.assertEqual(Group.objects.count(), 0)
+
+		request.POST['group_alias'] = 'space test'
+		response = home_page(request)
+		self.assertEqual(Group.objects.count(), 0)
+
+		request.POST['group_alias'] = 'alphanumeric/test/'
+		response = home_page(request)
+		self.assertEqual(Group.objects.count(), 0)
+
+		request.POST['group_alias'] = '12345678910111213test'
+		response = home_page(request)
+		self.assertEqual(Group.objects.count(), 0)
+
 
 class GroupModelTest(TestCase):
 

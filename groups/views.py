@@ -5,18 +5,50 @@ from groups.models import Group
 
 def home_page(request):
 	if request.method == 'POST':
+
+		#Writing less
+		name = request.POST['group_name']
+		alias = request.POST['group_alias']
+		tags = request.POST['group_tags']
+		description = request.POST['group_description']
+
 		#Verifications
-		if len(request.POST['group_name']) > 27:
+
+		verification = True
+		group_name_error_message = ''
+		group_alias_error_message = ''
+		group_tags_error_message = ''
+		group_description_error_message = ''
+
+		#Name verification
+		if len(name) > 27:
+
+			verification = False
+			group_name_error_message = 'O nome do grupo não deve possuir mais de 27 caracteres'
+
+		#Alias verification
+		if len(alias) > 20 or ' ' in alias or (not alias.islower()) or (not alias.isalpha()):
+
+			verification = False
+			group_alias_error_message = 'Minusculo, sem simbolos, sem espaço'
+
+		
+		if not verification :
+			
 			return render(request, 'home.html', {
-				'group_success': False,
-				'open_popup': True,
-				'group_name_error_message': 'O nome do grupo não deve possuir mais de 27 caracteres'
-				})
+					'group_success': False,
+					'open_popup': True,
+					'group_name_error_message': group_name_error_message,
+					'group_alias_error_message': group_alias_error_message,
+					'group_tags_error_message': group_tags_error_message,
+					'group_description_error_message': group_description_error_message
+					})
+
 		group = Group()
-		group.name = request.POST['group_name']
-		group.alias = request.POST['group_alias']
-		group.tags = request.POST['group_tags']
-		group.description = request.POST['group_description']
+		group.name = name
+		group.alias = alias
+		group.tags = tags
+		group.description = description
 		group.save()
 
 		return render(request, 'home.html', {
@@ -66,7 +98,3 @@ def search_groups(search_tags):
 				break
 
 	return found_groups
-
-
-	 
-	#Search search_tags in tags; alias; description

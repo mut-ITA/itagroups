@@ -20,7 +20,7 @@ def create_sample_POST_request():
 	request = HttpRequest()
 	request.method = 'POST'
 	request.POST['group_name'] = 'New group name'
-	request.POST['group_alias'] = 'Newgroupalias'
+	request.POST['group_alias'] = 'newgroupalias'
 	request.POST['group_tags'] = 'New group tags'
 	request.POST['group_description'] = 'New group description'
 

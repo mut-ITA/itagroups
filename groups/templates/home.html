@@ -111,9 +111,9 @@
                         <pre>
                                                 <span class="close">X</span>
                             <div>Nome:          <input name="group_name" id="id_group_name" /><br>{{group_name_error_message}}</div>
-                            <div>Alias:         <input name="group_alias" id="id_group_alias" placeholder="itagroups_alias@googlegroups.com" /><br>{{ group_alias_error_message }}</div>
-                            <div>Tags:          <input name="group_tags" id="id_group_tags" placeholder="Tags; separadas; por; ponto-e-virgula;" /><br>{{ group_tags_error_message }}</div>
-                            <div>Description:   <input type="text" name="group_description" id="id_group_description" /><br>{{ group_description_error_message }}</div>
+                            <div>Alias:         <input name="group_alias" id="id_group_alias" placeholder="itagroups_alias@googlegroups.com" /><br>{{group_alias_error_message}}</div>
+                            <div>Tags:          <input name="group_tags" id="id_group_tags" placeholder="Tags; separadas; por; ponto-e-virgula;" /><br>{{group_tags_error_message}}</div>
+                            <div>Description:   <input type="text" name="group_description" id="id_group_description" /><br>{{group_description_error_message}}</div>
                             <div>                        <button type="submit" id="id_create_new_group"> Criar </button></div>
                             {% csrf_token %}
                         </pre>
