@@ -14,8 +14,8 @@ def home_page(request):
 		tags = request.POST['group_tags']
 		description = request.POST['group_description']
 	
-		if verification(request, name, alias):			
-			return verification(request, name, alias)
+		if verification(request, name, alias, tags):			
+			return verification(request, name, alias, tags)
 
 		group = Group()
 		group.name = name
@@ -43,3 +43,4 @@ def home_page(request):
 				})
 
 	return render(request, 'home.html')
+
