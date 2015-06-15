@@ -1,3 +1,4 @@
+import sys
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
@@ -5,6 +6,20 @@ from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 import unittest
 
 class NewVisitorTest(StaticLiveServerTestCase):
+
+	@classmethod
+	def setUpClass(cls):
+		for arg in sys.argv:
+			if 'liveserver' in arg:
+				cls.server_url = 'http://' + arg.split('=')[1]
+				return
+		super().setUpClass()
+		cls.server_url = cls.live_server_url
+
+	@classmethod
+	def tearDownClass(cls):
+		if cls.server_url == cls.server_url:
+			super().tearDownClass()
 
 	def setUp(self):
 		self.browser = webdriver.Firefox()
@@ -16,7 +31,7 @@ class NewVisitorTest(StaticLiveServerTestCase):
 	def test_can_create_a_group_and_other_join_it_later(self):
 		# Um aluno do ita quer criar um grupo novo usando
 		# o site recomendado pelos veteranoes. Ele vai para a pagina inicial
-		self.browser.get(self.live_server_url)
+		self.browser.get(self.server_url)
 
 		# Ele percebe que tanto o titulo quanto o header se referem ao ITA
 		self.assertIn('ITA', self.browser.title)
@@ -29,9 +44,9 @@ class NewVisitorTest(StaticLiveServerTestCase):
 			create_group_button.get_attribute('type'),
 			'button'			
 			)
-
+		
 		# Ele pressiona o botao e surge um formulario para a criacao de grupo
-
+		create_group_button.click()
 
 		# Ele observa o formulario e o preenche conforme o desejado:
 		# nome: Testadores do H8
@@ -64,7 +79,7 @@ class NewVisitorTest(StaticLiveServerTestCase):
 		## Abrimos outro browser para simular o fato de ser um novo usuario
 		self.browser.quit()
 		self.browser = webdriver.Firefox()
-		self.browser.get(self.live_server_url)
+		self.browser.get(self.server_url)
 		self.browser.implicitly_wait(3)
 
 		# Ele entra no site e visualiza uma caixa de texto com um botao de pesquisa do lado
@@ -98,7 +113,7 @@ class NewVisitorTest(StaticLiveServerTestCase):
 		
 	def test_layout_and_styling(self):
 		# Philip vai para a pagina inicial
-		self.browser.get(self.live_server_url)
+		self.browser.get(self.server_url)
 		self.browser.set_window_size(1024, 768)
 
 		# Ele percebe a barra de pesquisas centralizada
