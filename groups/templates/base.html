@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+    <!-- JQUERY SETUP -->    
+<script type="text/javascript" src="{{ STATIC_URL }} /static/jquery-1.11.3.min.js"></script>
+<head>
+<title>Grupos ITA</title>
+<style type="text/css">
+    span.createGroup {
+        font-size: 30px;
+    }
+    section.hidden {
+        position: fixed;
+    }
+    section article.popup {
+        position: relative;
+        width: 400px;
+        height: 300px;
+        background: #e3e3e3;
+        color: #222;
+        border: 1px solid #333;
+        border-radius: 3px;
+        padding: 5px 7px;
+        margin: 10% auto;
+    }
+    span.close {
+        text-transform: uppercase;
+        color: #222;
+    }
+    span.close:hover{
+        color: red;
+        cursor: pointer;
+    }
+</style>
+</head>
+    <body>
+        {% block body %}        
+        {% endblock %}
+    </body>
+
+
+
+
+
+    <script>
+        $(document).ready(function(){     
+            $(function(){
+                $('span.createGroup').click(function(e){
+                    var hiddenSection = $('section.hidden');
+                    hiddenSection.fadeIn()
+                        // unhide section.hidden
+                        .css({ 'display':'block' })
+                        // set to full screen
+                        .css({ width: $(window).width() + 'px', height: $(window).height() + 'px' })
+                        .css({ top:($(window).height() - hiddenSection.height())/2 + 'px',
+                            left:($(window).width() - hiddenSection.width())/2 + 'px' })
+                        // greyed out background
+                        .css({ 'background-color': 'rgba(0,0,0,0.5)' })
+                        .appendTo('body');
+                        // console.log($(window).width() + ' - ' + $(window).height());
+                        $('span.close').click(function(){ $(hiddenSection).fadeOut(); document.location.href="/";});
+                });
+            });     
+        });
+    </script>
+</html>
