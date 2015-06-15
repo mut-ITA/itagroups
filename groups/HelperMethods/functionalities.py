@@ -17,7 +17,6 @@ def verification(request, name, alias, tags):
 
 		#Alias verification
 		if len(alias.strip()) > 20 or ' ' in alias or (not alias.islower()) or (not alias.isalnum()):
-
 			passed = False
 			group_alias_error_message = 'Minusculo, sem simbolos, sem espaço'
 

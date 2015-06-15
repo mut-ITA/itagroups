@@ -6,9 +6,11 @@ from groups.HelperMethods.functionalities import verification, search_groups
 
 
 def home_page(request):
+
+	# Home page post is adding new group
 	if request.method == 'POST':
 
-		#Writing less
+		# Writing less
 		name = request.POST['group_name']
 		alias = request.POST['group_alias']
 		tags = request.POST['group_tags']
@@ -33,6 +35,7 @@ def home_page(request):
 			'group_description': group.description
 			})
 
+	# Home page get is search for groups
 	if request.method == 'GET':
 
 		search_tags = request.GET.get('search_group', '')
@@ -42,5 +45,5 @@ def home_page(request):
 				'groups': found_groups
 				})
 
-	return render(request, 'home.html')
 
+	return render(request, 'home.html')

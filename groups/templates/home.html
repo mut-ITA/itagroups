@@ -1,152 +1,134 @@
-<!DOCTYPE html>
-<html lang="en" class="no-js">
-    <!-- JQUERY SETUP -->    
-<script type="text/javascript" src="{{ STATIC_URL }} /static/jquery-1.11.3.min.js"></script>
-<head>
-<title>Grupos ITA</title>
-<style type="text/css">
-    span.createGroup {
-        font-size: 30px;
-    }
-    section.hidden {
-        position: fixed;
-    }
-    section article.popup {
-        position: relative;
-        width: 400px;
-        height: 300px;
-        background: #e3e3e3;
-        color: #222;
-        border: 1px solid #333;
-        border-radius: 3px;
-        padding: 5px 7px;
-        margin: 10% auto;
-    }
-    span.close {
-        text-transform: uppercase;
-        color: #222;
-    }
-    span.close:hover{
-        color: red;
-        cursor: pointer;
-    }
-</style>
-</head>
-    <body>
-        <h1> Grupos de Email do ITA </h1>
-        <br> 
-        <div>
-            <form>
-                <input type="text" name="search_group" id="id_search_group" />
-                <button type="submit" id="id_search_button"> Pesquisar </button> 
-            </form>
-        </div>   
+{% extends 'base.html' %}
 
-        <br>
-        <br>
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-md-offset-3 jumbotron">
+                <div class = "text-center">
+                    <h1> Grupos de Email do ITA </h1>
+                    <br> 
+                    <form>
+                        <div id="id_search_form">
+                        <input  type="text" 
+                                name="search_group" 
+                                id="id_search_group" 
+                                class="form-control input-lg"
+                        />
+                        <button type="submit" id="id_search_button"> Pesquisar </button> 
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>  
+    <br>
+    <br>
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <table id="id_search_list" class="table">
+                {% if groups %}
+                <tr>
+                    <td> # </td>
+                    <td> Name </td>
+                    <td> Alias</td>
+                    <td> Description </td>
+                </tr>
+                {% endif %}
+                {% for group in groups %}
+                <tr>
+                    <td> {{ forloop.counter }} </td>
+                    <td> {{ group.name }} </td>
+                    <td> {{ group.alias }}</td>
+                    <td> {{ group.description }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
 
-        <table id="id_search_list">
-            {% if groups %}
-            <tr>
-                <td> # </td>
-                <td> Name </td>
-                <td> Alias</td>
-                <td> Description </td>
-            </tr>
-            {% endif %}
-            {% for group in groups %}
-            <tr>
-                <td> {{ forloop.counter }} </td>
-                <td> {{ group.name }} </td>
-                <td> {{ group.alias }}</td>
-                <td> {{ group.description }}</td>
-            </tr>
-            {% endfor %}
-        </table>
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <div class = "text-center">
+                <span class="createGroup">
+                    <button type="button" 
+                            id="id_create_group"
+                            class="btn btn-info btn-lg" 
+                            data-toggle="modal" 
+                            data-target="#createGroupModal">
+                        Criar Grupo
+                    </button>
+                </span> 
+            </div>
+        </div>
+    </div>
 
-        <span class="createGroup">
-            <button type="button" id="id_create_group">Criar Grupo</button>
-        </span> 
+     {% if open_popup %}
+        <script>
+            $(document).ready(function(){
+                $("#createGroupModal").modal('show');
+            });
+        </script>
+    {% endif %}
 
-        
-         {% if open_popup %}
-            <script>
-                $(document).ready(function()
-                {
-                    //alert("Success");
-                    var hiddenSection = $('section.hidden');
-                    hiddenSection.fadeIn()
-                    // unhide section.hidden
-                    .css({ 'display':'block' })
-                    // set to full screen
-                    .css({ width: $(window).width() + 'px', height: $(window).height() + 'px' })
-                    .css({ top:($(window).height() - hiddenSection.height())/2 + 'px',
-                        left:($(window).width() - hiddenSection.width())/2 + 'px' })
-                    // greyed out background
-                    .css({ 'background-color': 'rgba(0,0,0,0.5)' })
-                    .appendTo('body');
-                    // console.log($(window).width() + ' - ' + $(window).height());
-                    $('span.close').click(function(){ $(hiddenSection).fadeOut(); document.location.href="/";});
-                });
-            </script>
-        {% endif %}
-
-
-        <section class="hidden" id='id_popup'>
-            <article class="popup" >
-                <p>
+    <div id="createGroupModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
                     {% if group_success %}
-
-                        <div>
-                            <pre>
-                                                <span class="close">X</span>
-                            <div>{{ group_name }} criado com sucesso!          </div>
-                            <div>Alias: {{group_alias}}        </div>
-                            <div>Tags: {{group_tags}}          </div>
-                            <div>Description: {{group_description}}   </div>
-                            </pre>
+                        <h2 class="modal-title">Sucesso!</h2>
+                    {% else %}    
+                        <h2 class="modal-title">Criar um novo grupo</h2>
+                    {% endif %}       
+                </div>
+                <div class="modal-body">
+                    {% if group_success %}
+                        <div>{{ group_name }} criado com sucesso!          </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-success" data-dismiss="modal">Close</button>
                         </div>
                     {% else %}    
-                    <form method="POST">
-                        <pre>
-                                                <span class="close">X</span>
-                            <div>Nome:          <input name="group_name" id="id_group_name" /><br>{{group_name_error_message}}</div>
-                            <div>Alias:         <input name="group_alias" id="id_group_alias" placeholder="itagroups_alias@googlegroups.com" /><br>{{group_alias_error_message}}</div>
-                            <div>Tags:          <input name="group_tags" id="id_group_tags" placeholder="Tags; separadas; por; ponto-e-virgula;" /><br>{{group_tags_error_message}}</div>
-                            <div>Description:   <input type="text" name="group_description" id="id_group_description" /><br>{{group_description_error_message}}</div>
-                            <div>                        <button type="submit" id="id_create_new_group"> Criar </button></div>
-                            {% csrf_token %}
-                        </pre>
+                    <form method="POST" class="form-horizontal">
+                        <fieldset>
+                        <!-- Sign In Form -->
+                        <!-- Text input-->
+                        <div class="control-group">
+                          <label class="control-label" for="id_group_name">Nome:</label>
+                          <div class="controls">
+                            <input required="" name="group_name" id="id_group_name" type="text" class="form-control" class="input-medium">
+                            <font color="red">{{group_name_error_message}}</font>
+                          </div>
+                        </div>
+                        <div class="control-group">
+                          <label class="control-label" for="id_group_alias">Alias:</label>
+                          <div class="controls">
+                            <input required="" name="group_alias" id="id_group_alias" type="text" class="form-control" placeholder="itagroups_alias@googlegroups.com" class="input-medium">
+                            <font color="red">{{group_alias_error_message}}</font>
+                          </div>
+                        </div>
+                        <div class="control-group">
+                          <label class="control-label" for="id_group_tags">Tags:</label>
+                          <div class="controls">
+                            <input required="" name="group_tags" id="id_group_tags" type="text" class="form-control" placeholder="Tags; separadas; por; ponto-e-virgula;" class="input-medium">
+                            <font color="red">{{group_tags_error_message}}</font>
+                          </div>
+                        </div>
+                        <div class="control-group">
+                          <label class="control-label" for="id_group_description">Descricao:</label>
+                          <div class="controls">
+                            <textarea required="" name="group_description" id="id_group_description" class="form-control" class="input-medium" rows="3"></textarea>
+                            <font color="red">{{group_description_error_message}}</font>
+                          </div>
+                        </div>
+                        </fieldset>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-success">Submit</button>
+                        </div>
+                        {% csrf_token %}                            
                     </form>
                     {% endif %}
-                </p>
-            </article>
-        </section>
-    </body>
-
-
-
-
-
-    <script>
-        $(document).ready(function(){     
-            $(function(){
-                $('span.createGroup').click(function(e){
-                    var hiddenSection = $('section.hidden');
-                    hiddenSection.fadeIn()
-                        // unhide section.hidden
-                        .css({ 'display':'block' })
-                        // set to full screen
-                        .css({ width: $(window).width() + 'px', height: $(window).height() + 'px' })
-                        .css({ top:($(window).height() - hiddenSection.height())/2 + 'px',
-                            left:($(window).width() - hiddenSection.width())/2 + 'px' })
-                        // greyed out background
-                        .css({ 'background-color': 'rgba(0,0,0,0.5)' })
-                        .appendTo('body');
-                        // console.log($(window).width() + ' - ' + $(window).height());
-                        $('span.close').click(function(){ $(hiddenSection).fadeOut(); document.location.href="/";});
-                });
-            });     
-        });
-    </script>
-</html>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

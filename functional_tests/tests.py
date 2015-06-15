@@ -1,10 +1,25 @@
+import sys
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
-from django.test import LiveServerTestCase
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
 import unittest
 
-class NewVisitorTest(LiveServerTestCase):
+class NewVisitorTest(StaticLiveServerTestCase):
+
+	@classmethod
+	def setUpClass(cls):
+		for arg in sys.argv:
+			if 'liveserver' in arg:
+				cls.server_url = 'http://' + arg.split('=')[1]
+				return
+		super().setUpClass()
+		cls.server_url = cls.live_server_url
+
+	@classmethod
+	def tearDownClass(cls):
+		if cls.server_url == cls.server_url:
+			super().tearDownClass()
 
 	def setUp(self):
 		self.browser = webdriver.Firefox()
@@ -16,7 +31,7 @@ class NewVisitorTest(LiveServerTestCase):
 	def test_can_create_a_group_and_other_join_it_later(self):
 		# Um aluno do ita quer criar um grupo novo usando
 		# o site recomendado pelos veteranoes. Ele vai para a pagina inicial
-		self.browser.get(self.live_server_url)
+		self.browser.get(self.server_url)
 
 		# Ele percebe que tanto o titulo quanto o header se referem ao ITA
 		self.assertIn('ITA', self.browser.title)
@@ -29,9 +44,9 @@ class NewVisitorTest(LiveServerTestCase):
 			create_group_button.get_attribute('type'),
 			'button'			
 			)
-
+		
 		# Ele pressiona o botao e surge um formulario para a criacao de grupo
-
+		create_group_button.click()
 
 		# Ele observa o formulario e o preenche conforme o desejado:
 		# nome: Testadores do H8
@@ -64,7 +79,7 @@ class NewVisitorTest(LiveServerTestCase):
 		## Abrimos outro browser para simular o fato de ser um novo usuario
 		self.browser.quit()
 		self.browser = webdriver.Firefox()
-		self.browser.get(self.live_server_url)
+		self.browser.get(self.server_url)
 		self.browser.implicitly_wait(3)
 
 		# Ele entra no site e visualiza uma caixa de texto com um botao de pesquisa do lado
@@ -83,7 +98,6 @@ class NewVisitorTest(LiveServerTestCase):
 			columns += r.find_elements_by_tag_name('td')
 		self.assertIn('Testadores no H8', [col.text for col in columns])
 
-
 		# Gustavo observa a pagina e clica no link para ver mais detalhes sobre o grupo 
 
 		# Apos ser redirecionado para a pagina do grupo, Gustavo, satisfeito com a descricao,
@@ -92,44 +106,20 @@ class NewVisitorTest(LiveServerTestCase):
 		# Confiando no funcionamento do site, Gustavo volta às suas atividades
 
 		## Abrimos outro browser para simular o fato de ser um novo usuario
-		self.browser.quit()
-		self.browser = webdriver.Firefox()
-		self.browser.get(self.live_server_url)
-		self.browser.implicitly_wait(3)
-
-		#Chico resolveu criar um grupo para a AnimITA
-
-		# Chico observa o formulario e o preenche conforme o desejado:
-		# nome: Testadores do H8
-		group_name_input = self.browser.find_element_by_id('id_group_name')
-		group_name_input.send_keys("ANIMITA 1337 MUITO GRANDE MAIS DE 27 ARROBA")
-
-		# alias: h8testers
-		group_alias_input = self.browser.find_element_by_id('id_group_alias')
-		group_alias_input.send_keys("ANIMITA COM ESPACO")
-
-		# tags: TDD, test
-		group_tags_input = self.browser.find_element_by_id('id_group_tags')
-		group_tags_input.send_keys("TDD; test;")
-
-		# description: Um grupo maneiro de aprender a testar
-		group_description_input = self.browser.find_element_by_id('id_group_description')
-		group_description_input.send_keys("Um grupo maneiro de aprender a testar")
-
-		# Apos escrever o que desejava, conferiu e pressionou o botao de criar novo grupo.
-		create_group_button = self.browser.find_element_by_id('id_create_new_group')		
-		self.assertEqual(
-			create_group_button.get_attribute('type'),
-			'submit'			
-			)
-		create_group_button.click()
 
 
-		#Assim, percebeu que seu grupo não foi criado, pois haviam algumas restrições na página
+		## self.fail("Finish the test! Add Popup!")
 
 		
+	def test_layout_and_styling(self):
+		# Philip vai para a pagina inicial
+		self.browser.get(self.server_url)
+		self.browser.set_window_size(1024, 768)
 
-
-
-
-		self.fail("Finish the test! Add Popup!")
+		# Ele percebe a barra de pesquisas centralizada
+		search_input = self.browser.find_element_by_id('id_search_form')
+		self.assertAlmostEqual(
+			search_input.location['x'] + search_input.size['width'] / 2,
+			512,
+			delta = 50
+		)
