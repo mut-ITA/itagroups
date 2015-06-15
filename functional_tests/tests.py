@@ -92,8 +92,28 @@ class NewVisitorTest(LiveServerTestCase):
 		# Confiando no funcionamento do site, Gustavo volta às suas atividades
 
 		## Abrimos outro browser para simular o fato de ser um novo usuario
-		self.browser.quit()
-		self.browser = webdriver.Firefox()
+
+
+		## self.fail("Finish the test! Add Popup!")
+
+		
+	def test_layout_and_styling(self):
+		# Philip vai para a pagina inicial
+		self.browser.get(self.live_server_url)
+		self.browser.set_window_size(1024, 768)
+
+		# Ele percebe a barra de pesquisas centralizada
+		search_input = self.browser.find_element_by_id('id_search_group')
+		self.assertAlmostEqual(
+			search_input.location['x'] + search_input.size['width'] / 2,
+			512,
+			delta = 5
+		)
+
+		self.fail("Finish the test!")
+
+	## PERCEBA COMO ESSE TESTE NAO TESTA NADA NOVO
+	def dont_test_dumb_user(self):
 		self.browser.get(self.live_server_url)
 		self.browser.implicitly_wait(3)
 
@@ -126,10 +146,3 @@ class NewVisitorTest(LiveServerTestCase):
 
 
 		#Assim, percebeu que seu grupo não foi criado, pois haviam algumas restrições na página
-
-		
-
-
-
-
-		self.fail("Finish the test! Add Popup!")
