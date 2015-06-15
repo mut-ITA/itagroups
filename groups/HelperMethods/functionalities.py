@@ -16,7 +16,7 @@ def verification(request, name, alias):
 			group_name_error_message = 'O nome do grupo não deve possuir mais de 27 caracteres'
 
 		#Alias verification
-		if len(alias) > 20 or ' ' in alias or (not alias.islower()) or (not alias.isalpha()):
+		if len(alias) > 20 or ' ' in alias or (not alias.islower()) or (not alias.isalnum()):
 
 			passed = False
 			group_alias_error_message = 'Minusculo, sem simbolos, sem espaço'

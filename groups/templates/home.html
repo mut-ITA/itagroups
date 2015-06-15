@@ -1,35 +1,50 @@
 {% extends 'base.html' %}
 
 {% block body %}
-    <h1> Grupos de Email do ITA </h1>
-    <br> 
-    <div>
-        <form>
-            <input type="text" name="search_group" id="id_search_group" />
-            <button type="submit" id="id_search_button"> Pesquisar </button> 
-        </form>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-md-offset-3 jumbotron">
+                <div class = "text-center">
+                    <h1> Grupos de Email do ITA </h1>
+                    <br> 
+                    <form>
+                        <div id="id_search_form">
+                        <input  type="text" 
+                                name="search_group" 
+                                id="id_search_group" 
+                                class="form-control input-lg"
+                        />
+                        <button type="submit" id="id_search_button"> Pesquisar </button> 
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>  
     <br>
     <br>
-
-    <table id="id_search_list">
-        {% if groups %}
-        <tr>
-            <td> # </td>
-            <td> Name </td>
-            <td> Alias</td>
-            <td> Description </td>
-        </tr>
-        {% endif %}
-        {% for group in groups %}
-        <tr>
-            <td> {{ forloop.counter }} </td>
-            <td> {{ group.name }} </td>
-            <td> {{ group.alias }}</td>
-            <td> {{ group.description }}</td>
-        </tr>
-        {% endfor %}
-    </table>
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <table id="id_search_list" class="table">
+                {% if groups %}
+                <tr>
+                    <td> # </td>
+                    <td> Name </td>
+                    <td> Alias</td>
+                    <td> Description </td>
+                </tr>
+                {% endif %}
+                {% for group in groups %}
+                <tr>
+                    <td> {{ forloop.counter }} </td>
+                    <td> {{ group.name }} </td>
+                    <td> {{ group.alias }}</td>
+                    <td> {{ group.description }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
 
     <span class="createGroup">
         <button type="button" id="id_create_group">Criar Grupo</button>
@@ -59,7 +74,7 @@
     {% endif %}
 
 
-    <section class="hidden" id='id_popup'>
+    <section id='id_popup'>
         <article class="popup" >
             <p>
                 {% if group_success %}
