@@ -117,7 +117,14 @@ class NewVisitorTest(StaticLiveServerTestCase):
 		self.assertIn(self.browser.current_url, 'http://localhost:8081/h8testers')
 
 		# Apos ser redirecionado para a pagina do grupo, Gustavo, satisfeito com a descricao,
+		
+		self.assertIn('Testadores no H8', self.browser.title)
+		header_text = self.browser.find_element_by_tag_name('h1').text
+		self.assertIn('Testadores no H8', header_text)
+
 		# pressiona o botao de entrar no grupo
+
+
         
 		# Confiando no funcionamento do site, Gustavo volta às suas atividades
 

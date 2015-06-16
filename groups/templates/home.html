@@ -40,7 +40,7 @@
                     <td> {{ group.name }} </td>
                     <td id="table_alias"> {{ group.alias }}</td>
                     <td> {{ group.description }}</td>
-                    <td> <form></form>><button type="submit" id="table_view_button">View Group</button></form></td>
+                    <td> <a href="/{{ group.alias }}"> <button type="submit" id="table_view_button">View Group</button></a></td>
                 </tr>
                 {% endfor %}
             </table>

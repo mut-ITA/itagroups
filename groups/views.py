@@ -37,19 +37,19 @@ def home_page(request):
 
 	# Home page get is search for groups
 	if request.method == 'GET':
-		if request.GET.get('request', 0) == 1:
-			pass
-
-		else:
-			search_tags = request.GET.get('search_group', '')
-			if search_tags != '':
-				found_groups = search_groups(search_tags)
-				return render(request, 'home.html', {
-					'groups': found_groups
-					})
+		search_tags = request.GET.get('search_group', '')
+		if search_tags != '':
+			found_groups = search_groups(search_tags)
+			return render(request, 'home.html', {
+				'groups': found_groups
+				})
 
 
-		return render(request, 'home.html')
+	return render(request, 'home.html')
 
-#def view_group(request, group_alias):
+def view_group(request, group_alias):
+	found_groups = search_groups(group_alias)
+	return render(request, 'view.html',{
+		'group_name': found_groups[0].name
+		})
 
