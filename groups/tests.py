@@ -211,3 +211,6 @@ class SearchTests(TestCase):
 		found_groups = search_groups('description')
 		self.assertEqual(len(found_groups), 1)
 		self.assertTrue('tehalias' in [a.alias for a in found_groups])
+
+class ViewGroup(TestCase):
+	

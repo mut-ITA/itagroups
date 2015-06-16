@@ -14,7 +14,7 @@
                                 id="id_search_group" 
                                 class="form-control input-lg"
                         />
-                        <button type="submit" id="id_search_button"> Pesquisar </button> 
+                        <button type="submit" id="id_search_button" value="search_button"> Pesquisar </button> 
                         </div>
                     </form>
                 </div>
@@ -38,8 +38,9 @@
                 <tr>
                     <td> {{ forloop.counter }} </td>
                     <td> {{ group.name }} </td>
-                    <td> {{ group.alias }}</td>
+                    <td id="table_alias"> {{ group.alias }}</td>
                     <td> {{ group.description }}</td>
+                    <td> <form></form>><button type="submit" id="table_view_button">View Group</button></form></td>
                 </tr>
                 {% endfor %}
             </table>
@@ -85,7 +86,7 @@
                     {% if group_success %}
                         <div>{{ group_name }} criado com sucesso!          </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-success" data-dismiss="modal">Close</button>
+                            <a href="/"><button type="button" class="btn btn-success" data-dismiss="modal">  </a>Close</button>
                         </div>
                     {% else %}    
                     <form method="POST" class="form-horizontal">
@@ -122,7 +123,7 @@
                         </div>
                         </fieldset>
                         <div class="modal-footer">
-                            <button type="submit" class="btn btn-success">Submit</button>
+                            <button type="submit" class="btn btn-success" id="id_create_new_group">Submit</button>
                         </div>
                         {% csrf_token %}                            
                     </form>

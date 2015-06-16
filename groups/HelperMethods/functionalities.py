@@ -20,6 +20,15 @@ def verification(request, name, alias, tags):
 			passed = False
 			group_alias_error_message = 'Minusculo, sem simbolos, sem espaço'
 
+		#Alias originality
+		for g in Group.objects.all():
+			if alias == g.alias:
+				passed = False
+				group_alias_error_message = 'Já existe um grupo com esse alias'
+			if name == g.name:
+				passed = False
+				group_name_error_message = 'Já existe um grupo com esse nome'
+
 		#Tag verification
 		for tag in tags.split(';'):
 			for n in range(tags.split(';').index(tag) + 1, len(tags.split(';'))):

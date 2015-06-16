@@ -59,7 +59,7 @@ class NewVisitorTest(StaticLiveServerTestCase):
 
 		# tags: TDD, test
 		group_tags_input = self.browser.find_element_by_id('id_group_tags')
-		group_tags_input.send_keys("TDD; test;")
+		group_tags_input.send_keys("TDD; test")
 
 		# description: Um grupo maneiro de aprender a testar
 		group_description_input = self.browser.find_element_by_id('id_group_description')
@@ -72,6 +72,8 @@ class NewVisitorTest(StaticLiveServerTestCase):
 			'submit'			
 			)
 		create_group_button.click()
+		self.browser.implicitly_wait(10)
+
 
 		# Acreditando que o grupo foi criado corretamente, ele saiu da pagina
 		# Outro usuario, Mutante, entra no site querendo entrar num grupo de testadores
@@ -99,6 +101,20 @@ class NewVisitorTest(StaticLiveServerTestCase):
 		self.assertIn('Testadores no H8', [col.text for col in columns])
 
 		# Gustavo observa a pagina e clica no link para ver mais detalhes sobre o grupo 
+
+		table 	= self.browser.find_element_by_id('id_search_list')
+		rows = table.find_elements_by_tag_name('tr')
+		columns = []
+		for r in rows:
+			columns += r.find_elements_by_id('table_alias')
+			columns += r.find_elements_by_id('table_view_button')
+		for col in columns:
+			if col.text == 'h8testers':
+				view_group_button = columns[columns.index(col) + 1]
+		
+		view_group_button.click()
+
+		self.assertIn(self.browser.current_url, 'http://localhost:8081/h8testers')
 
 		# Apos ser redirecionado para a pagina do grupo, Gustavo, satisfeito com a descricao,
 		# pressiona o botao de entrar no grupo
