@@ -48,8 +48,7 @@ def home_page(request):
 					'groups': found_groups
 					})
 
-
-		return render(request, 'home.html')
+	return render(request, 'home.html')
 
 #def view_group(request, group_alias):
 
