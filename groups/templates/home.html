@@ -62,7 +62,7 @@
         </div>
     </div>
 
-     {% if open_popup %}
+    {% if open_popup %}
         <script>
             $(document).ready(function(){
                 $("#createGroupModal").modal('show');
@@ -122,7 +122,7 @@
                         </div>
                         </fieldset>
                         <div class="modal-footer">
-                            <button type="submit" class="btn btn-success">Submit</button>
+                            <button type="submit" class="btn btn-success" id="id_create_new_group">Submit</button>
                         </div>
                         {% csrf_token %}                            
                     </form>
