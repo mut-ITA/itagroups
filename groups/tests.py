@@ -43,14 +43,20 @@ class CreateGroupTest(TestCase):
 		new_group = Group.objects.first()
 		self.assertEqual(new_group.name, 'New group name')
 		self.assertEqual(new_group.alias, 'newgroupalias')
-		self.assertEqual(new_group.tags, 'New group tags')
+		self.assertEqual(new_group.tags, 'New; group; tags')
 		self.assertEqual(new_group.description, 'New group description')
 
 	def test_create_group_correct_name(self):
-		#Only restriction: < 27 characters
+		#Only restriction: characters => 3 < 27 
 		request = create_sample_POST_request()
 		
 		request.POST['group_name'] = 'Newgroupnamewith28characters'
+
+		response = home_page(request)
+
+		self.assertEqual(Group.objects.count(), 0)
+
+		request.POST['group_name'] = 'da'
 
 		response = home_page(request)
 
@@ -75,6 +81,23 @@ class CreateGroupTest(TestCase):
 		request.POST['group_alias'] = '12345678910111213test'
 		response = home_page(request)
 		self.assertEqual(Group.objects.count(), 0)
+
+	def test_create_group_correct_tag(self):
+		#Restriction: each tag => 3 < 12, no equal tags
+		request = create_sample_POST_request()
+		
+		request.POST['group_tags'] = 'da; tags; like; a; newbie'
+
+		response = home_page(request)
+
+		self.assertEqual(Group.objects.count(), 0)
+
+		request.POST['group_tags'] = 'dum; dee; dum'
+
+		response = home_page(request)
+
+		self.assertEqual(Group.objects.count(), 0)
+
 
 
 class GroupModelTest(TestCase):
@@ -185,3 +208,6 @@ class SearchTests(TestCase):
 		found_groups = search_groups('description')
 		self.assertEqual(len(found_groups), 1)
 		self.assertTrue('tehalias' in [a.alias for a in found_groups])
+
+class ViewGroup(TestCase):
+	

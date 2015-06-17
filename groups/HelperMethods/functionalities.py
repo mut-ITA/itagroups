@@ -2,7 +2,7 @@ from django.shortcuts import render
 
 from groups.models import Group
 
-def verification(request, name, alias):
+def verification(request, name, alias, tags):
 		passed = True
 		group_name_error_message = ''
 		group_alias_error_message = ''
@@ -10,16 +10,37 @@ def verification(request, name, alias):
 		group_description_error_message = ''
 
 		#Name verification
-		if len(name) > 27:
+		if len(name.strip()) > 27 or len(name.strip()) < 3:
 
 			passed = False
-			group_name_error_message = 'O nome do grupo não deve possuir mais de 27 caracteres'
+			group_name_error_message = 'O nome do grupo deve possuir entre 3 e 27 caracteres'
 
 		#Alias verification
-		if len(alias) > 20 or ' ' in alias or (not alias.islower()) or (not alias.isalnum()):
-
+		if len(alias.strip()) > 20 or ' ' in alias or (not alias.islower()) or (not alias.isalnum()):
 			passed = False
 			group_alias_error_message = 'Minusculo, sem simbolos, sem espaço'
+
+		#Alias originality
+		for g in Group.objects.all():
+			if alias == g.alias:
+				passed = False
+				group_alias_error_message = 'Já existe um grupo com esse alias'
+			if name == g.name:
+				passed = False
+				group_name_error_message = 'Já existe um grupo com esse nome'
+
+		#Tag verification
+		for tag in tags.split(';'):
+			for n in range(tags.split(';').index(tag) + 1, len(tags.split(';'))):
+				if tag.strip() == tags.split(';')[n].strip():
+					passed = False
+					group_tags_error_message = 'Não podem haver tags iguais'
+
+			if len(tag.strip()) > 12 or len(tag.strip()) < 3:
+				passed = False
+				group_tags_error_message = 'Todas as tags devem possuir entre 3 e 12 caracteres'
+
+
 
 		if passed:
 			return None
