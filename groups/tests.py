@@ -3,9 +3,10 @@ from django.test import TestCase
 from django.http import HttpRequest
 from django.template.loader import render_to_string
 
-from groups.views import home_page, search_groups
+from groups.views import home_page, view_group
 from groups.models import Group
 from groups.HelperMethods.tests import create_sample_database, create_sample_POST_request
+from groups.HelperMethods.functionalities import search_groups
 
 # Create your tests here.
 
@@ -21,6 +22,25 @@ class HomePageTest(TestCase):
 		expected_html = render_to_string('home.html')
 		self.assertEqual(response.content.decode(), expected_html)
 
+
+class ViewGroupTests(TestCase):
+	
+	def test_view_page_returns_correct_html(self):
+		create_sample_database()
+
+		request = HttpRequest()
+
+		saved_groups = Group.objects.all()
+		response = view_group(request, saved_groups[0].alias)
+
+		self.assertTemplateUsed('view.html')
+		self.assertIn(saved_groups[0].name, response.content.decode())
+
+	def test_view_page_returns_to_home_wrong_alias(self):
+		response = self.client.get('/this_is_a_wrong_alias/')
+
+		self.assertRedirects(response, '/')
+		
 
 class CreateGroupTest(TestCase):
 

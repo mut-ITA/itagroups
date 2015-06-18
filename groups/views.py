@@ -1,4 +1,5 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.http import Http404
 
 from groups.models import Group
 
@@ -48,7 +49,10 @@ def home_page(request):
 	
 def view_group(request, group_alias):
 	found_groups = search_groups(group_alias)
-	return render(request, 'view.html', {
-		'group_name': found_groups[0].name
-		})
+	if found_groups:
+		return render(request, 'view.html', {
+			'group_name': found_groups[0].name
+			})
+	return redirect('/')
+
 
