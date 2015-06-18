@@ -35,7 +35,7 @@ def home_page(request):
 			'group_description': group.description
 			})
 
-	# Home page get is search for groups
+	# Home page get is searching for groups
 	if request.method == 'GET':
 		search_tags = request.GET.get('search_group', '')
 		if search_tags != '':
@@ -44,12 +44,11 @@ def home_page(request):
 				'groups': found_groups
 				})
 
-
 	return render(request, 'home.html')
 	
 def view_group(request, group_alias):
 	found_groups = search_groups(group_alias)
-	return render(request, 'view.html',{
+	return render(request, 'view.html', {
 		'group_name': found_groups[0].name
 		})
 
