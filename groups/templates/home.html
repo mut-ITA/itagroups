@@ -6,7 +6,20 @@
     <div class="container">
         <div class="row">
             <div class = "text-right">
-                    
+                    {% if isSigned in %}
+                    <h2> Logout </h2>
+                    { else }
+                    <span id="signinButton">
+                        <span
+                        class="g-signin"
+                        data-callback="signinCallback"
+                        data-clientid="749998719149-niibes0btm4kopoibj1eels4qgm7qihu.apps.googleusercontent.com"
+                        data-cookiepolicy="none"
+                        data-requestvisibleactions="http://schemas.google.com/AddActivity"
+                        data-scope="https://www.googleapis.com/auth/plus.login">
+                        </span>
+                    </span>
+                    { endif }
                 </div>
             <div class="col-md-6 col-md-offset-3 jumbotron">
                 <div class = "text-center">
