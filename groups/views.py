@@ -47,9 +47,13 @@ def home_page(request):
 
 	return render(request, 'home.html')
 
+<<<<<<< HEAD
 def view_group(request, group_alias):
 	found_groups = search_groups(group_alias)
 	return render(request, 'view.html',{
 		'group_name': found_groups[0].name
 		})
+=======
+#def view_group(request, group_alias):
+>>>>>>> ead781e5377100c5817e92bc846fb43ad3dcacf3
 

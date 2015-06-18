@@ -30,9 +30,6 @@ class CreateGroupTest(TestCase):
 		response = home_page(request)
 
 		self.assertIn('New group name', response.content.decode())
-		self.assertIn('newgroupalias', response.content.decode())
-		self.assertIn('New; group; tags', response.content.decode())
-		self.assertIn('New group description', response.content.decode())
 
 		#self.assertEqual(response.status_code, 302)
 		#self.assertEqual(response['location'], '/')
@@ -211,6 +208,3 @@ class SearchTests(TestCase):
 		found_groups = search_groups('description')
 		self.assertEqual(len(found_groups), 1)
 		self.assertTrue('tehalias' in [a.alias for a in found_groups])
-
-class ViewGroup(TestCase):
-	
