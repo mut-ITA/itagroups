@@ -25,7 +25,7 @@ SECRET_KEY = '%2pm9ehcf6+a1dcf9(cn^p9b+*3u*-h@zjhi!i)$eubvmh1yl3'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["itagroups-staging.gustavomut.com"]
 
 
 # Application definition
