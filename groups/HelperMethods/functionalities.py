@@ -54,7 +54,6 @@ def verification(request, name, alias, tags):
 					'group_description_error_message': group_description_error_message
 					})
 
-
 def search_groups(search_tags):	
 	all_groups = Group.objects.all()
 	#Add priority
