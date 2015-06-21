@@ -4,12 +4,68 @@
     <script type="text/javascript" src="/static/jquery-1.11.3.min.js"></script>
         <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="/static/bootstrap/js/bootstrap.min.js"></script>
+    // <script type="text/javascript">
+    //     (function() {
+    //         var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+    //         po.src = 'https://apis.google.com/js/client:plusone.js';
+    //         var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+    //     })();
+    //     function signinCallback(authResult) {
+    //         if (authResult['access_token']) {
+    //             // Autorizado com sucesso
+    //             // Ocultar o botão de login agora que o usuário está autorizado, por exemplo:
+    //             document.getElementById('signinButton').setAttribute('style', 'display: none');
+    //             //alert('batata');
+    //             //alert(authResult['access_token']);
+    //         } 
+    //         else if (authResult['error']) {
+    //             // Ocorreu um erro.
+    //             // Possíveis códigos de erro:
+    //             //  "access_denied" - o usuário negou o acesso a seu aplicativo
+    //             //   "immediate_failed" - não foi possível fazer o login do usuário automaticamente
+    //             // console.log('There was an error: ' + authResult['error']);
+    //         }
+    //     }
+    // </script>
+
+    // <script type="text/javascript">
+    // function disconnectUser(access_token) {
+    //   //var revokeUrl = 'https://accounts.google.com/o/oauth2/revoke?token=' + 
+    //     //access_token;
+    //   alert("toma no cu");
+    //   // Realizar uma solicitação GET assíncrona.
+    //   $.ajax({
+    //     type: 'GET',
+    //     url: revokeUrl,
+    //     async: false,
+    //     contentType: "application/json",
+    //     dataType: 'jsonp',
+    //     success: function(nullResponse) {
+    //       // Fazer algo agora que o usuário está desconectado
+    //       // A resposta é sempre indefinida.
+    //       alert("Desconectado");
+    //     },
+    //     error: function(e) {
+    //       // Gerenciar o erro
+    //       // console.log(e);
+    //       // Você pode apontar usuários para desconectar manualmente se não for bem-sucedido
+    //       // https://plus.google.com/apps
+    //     }
+    //   });
+    // }
+    // // É possível desconectar com um clique no botão
+    // $('#revokeButton').click(disconnectUser);
+    // </script>
+
 
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Grupos ITA</title>
+        <title>
+            {% block title %}        
+            {% endblock %}
+        </title>
             <!-- Bootstrap -->
         <link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
         <link href="/static/base.css" rel="stylesheet">

@@ -114,7 +114,7 @@ class NewVisitorTest(StaticLiveServerTestCase):
 		
 		view_group_button.click()
 
-		self.assertIn(self.browser.current_url, 'http://localhost:8081/h8testers')
+		self.assertIn(self.browser.current_url, 'http://localhost:8081/h8testers/')
 
 		# Apos ser redirecionado para a pagina do grupo, Gustavo, satisfeito com a descricao,
 		
