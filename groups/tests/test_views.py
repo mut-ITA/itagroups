@@ -71,15 +71,13 @@ class CreateGroupTest(TestCase):
 		request = create_sample_POST_request()
 		
 		request.POST['group_name'] = 'Newgroupnamewith28characters'
-
 		response = home_page(request)
-
+		self.assertVerificationError(response, 'O nome do grupo deve possuir entre 3 e 27 caracteres')
 		self.assertEqual(Group.objects.count(), 0)
 
 		request.POST['group_name'] = 'da'
-
 		response = home_page(request)
-
+		self.assertVerificationError(response, 'O nome do grupo deve possuir entre 3 e 27 caracteres')
 		self.assertEqual(Group.objects.count(), 0)
 
 	def test_create_group_correct_alias(self):
@@ -88,36 +86,42 @@ class CreateGroupTest(TestCase):
 
 		request.POST['group_alias'] = 'UPPERCASETEST'
 		response = home_page(request)
+		self.assertVerificationError(response, 'Minusculo, sem simbolos, sem espaço')
 		self.assertEqual(Group.objects.count(), 0)
 
 		request.POST['group_alias'] = 'space test'
 		response = home_page(request)
+		self.assertVerificationError(response, 'Minusculo, sem simbolos, sem espaço')
 		self.assertEqual(Group.objects.count(), 0)
 
 		request.POST['group_alias'] = 'alphanumeric/test/'
 		response = home_page(request)
+		self.assertVerificationError(response, 'Minusculo, sem simbolos, sem espaço')
 		self.assertEqual(Group.objects.count(), 0)
 
 		request.POST['group_alias'] = '12345678910111213test'
 		response = home_page(request)
+		self.assertVerificationError(response, 'Minusculo, sem simbolos, sem espaço')
 		self.assertEqual(Group.objects.count(), 0)
+		
 
 	def test_create_group_correct_tag(self):
 		#Restriction: each tag => 3 < 12, no equal tags
 		request = create_sample_POST_request()
 		
 		request.POST['group_tags'] = 'da; tags; like; a; newbie'
-
 		response = home_page(request)
-
+		self.assertVerificationError(response, 'Todas as tags devem possuir entre 3 e 12 caracteres')
 		self.assertEqual(Group.objects.count(), 0)
 
 		request.POST['group_tags'] = 'dum; dee; dum'
-
 		response = home_page(request)
-
+		self.assertVerificationError(response, 'Não podem haver tags iguais')
 		self.assertEqual(Group.objects.count(), 0)
-		
+
+	def assertVerificationError(self, response, expected_error):
+		self.assertContains(response, expected_error)
+
 
 class SearchTests(TestCase):
 

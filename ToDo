@@ -1,9 +1,8 @@
 To do:
 
-	-Criar links dos grupos
+	-Sign in and Sign up
 
-	- Verificacoes:
-		- Verificar aliases duplicados! =)
+	-Refactor hardcoded urls (from home.html)
 
 	-Google api =(
 
@@ -14,4 +13,9 @@ In Progress:
 
 
 Done:
+
+	-Criar links dos grupos
+
+	- Verificacoes:
+		- Verificar aliases duplicados! =)
 

@@ -14,41 +14,19 @@ class NewVisitorTest(FunctionalTest):
 		header_text = self.browser.find_element_by_tag_name('h1').text
 		self.assertIn('ITA', header_text)
 
-		# Ele observa a pagina encontra o botao de criar um novo grupos
-		create_group_button = self.browser.find_element_by_id('id_create_group')		
-		self.assertEqual(
-			create_group_button.get_attribute('type'),
-			'button'			
-			)
-		
+		# Ele observa a pagina encontra o botao de criar um novo grupos		
 		# Ele pressiona o botao e surge um formulario para a criacao de grupo
-		create_group_button.click()
-
 		# Ele observa o formulario e o preenche conforme o desejado:
 		# nome: Testadores do H8
-		group_name_input = self.browser.find_element_by_id('id_group_name')
-		group_name_input.send_keys("Testadores no H8")
-
 		# alias: h8testers
-		group_alias_input = self.browser.find_element_by_id('id_group_alias')
-		group_alias_input.send_keys("h8testers")
-
 		# tags: TDD, test
-		group_tags_input = self.browser.find_element_by_id('id_group_tags')
-		group_tags_input.send_keys("TDD; test")
-
 		# description: Um grupo maneiro de aprender a testar
-		group_description_input = self.browser.find_element_by_id('id_group_description')
-		group_description_input.send_keys("Um grupo maneiro de aprender a testar")
-
 		# Apos escrever o que desejava, conferiu e pressionou o botao de criar novo grupo.
-		create_group_button = self.browser.find_element_by_id('id_create_new_group')		
-		self.assertEqual(
-			create_group_button.get_attribute('type'),
-			'submit'			
-			)
-		create_group_button.click()
-		self.browser.implicitly_wait(5)
+
+		self.createGroupManually(	name = "Testadores no H8",
+									alias = "h8testers",
+									tags =  "TDD; test",
+									description = "Um grupo maneiro de aprender a testar")
 
 
 		# Agora ele deseja saber se o grupo foi criado corretamente

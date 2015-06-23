@@ -1,4 +1,5 @@
 from django.test import TestCase
+from django.core.exceptions import ValidationError
 
 from groups.models import Group
 from groups.HelperMethods.tests import create_sample_database
@@ -18,3 +19,9 @@ class GroupModelTest(TestCase):
 		self.assertEqual(first_saved_group.tags, 'Teh; tags')
 		self.assertEqual(first_saved_group.description, 'Teh description')
 		self.assertEqual(second_saved_group.name, 'Teh name2')
+
+	def test_cannot_save_empty_group(self):
+		group = Group(name = '', alias = '', tags = '', description = '')
+		with self.assertRaises(ValidationError):
+			group.save()
+			group.full_clean()

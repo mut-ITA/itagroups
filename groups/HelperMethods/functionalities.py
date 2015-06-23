@@ -30,7 +30,7 @@ def verification(request, name, alias, tags):
 				group_name_error_message = 'Já existe um grupo com esse nome'
 
 		#Tag verification
-		for tag in tags.split(';'):
+		for tag in tags.strip().split(';'):
 			for n in range(tags.split(';').index(tag) + 1, len(tags.split(';'))):
 				if tag.strip() == tags.split(';')[n].strip():
 					passed = False
