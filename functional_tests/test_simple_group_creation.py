@@ -14,7 +14,7 @@ class NewVisitorTest(FunctionalTest):
 		header_text = self.browser.find_element_by_tag_name('h1').text
 		self.assertIn('ITA', header_text)
 
-		# Ele observa a pagina encontra o botao de criar um novo grupo
+		# Ele observa a pagina encontra o botao de criar um novo grupos
 		create_group_button = self.browser.find_element_by_id('id_create_group')		
 		self.assertEqual(
 			create_group_button.get_attribute('type'),
@@ -48,7 +48,7 @@ class NewVisitorTest(FunctionalTest):
 			'submit'			
 			)
 		create_group_button.click()
-		self.browser.implicitly_wait(10)
+		self.browser.implicitly_wait(5)
 
 
 		# Agora ele deseja saber se o grupo foi criado corretamente
