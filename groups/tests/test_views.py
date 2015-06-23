@@ -37,7 +37,7 @@ class ViewGroupTests(TestCase):
 		self.assertIn(saved_groups[0].name, response.content.decode())
 
 	def test_view_page_returns_to_home_wrong_alias(self):
-		response = self.client.get('/this_is_a_wrong_alias/')
+		response = self.client.get('/groups/this_is_a_wrong_alias/')
 
 		self.assertRedirects(response, '/')
 		
@@ -117,25 +117,7 @@ class CreateGroupTest(TestCase):
 		response = home_page(request)
 
 		self.assertEqual(Group.objects.count(), 0)
-
-
-
-class GroupModelTest(TestCase):
-
-	def test_saving_and_retrieving_groups(self):
-		create_sample_database()
-
-		saved_groups = Group.objects.all()
-		self.assertEqual(saved_groups.count(), 2)
-
-		first_saved_group = saved_groups[0]
-		second_saved_group = saved_groups[1]
-		self.assertEqual(first_saved_group.name, 'Teh name')
-		self.assertEqual(first_saved_group.alias, 'tehalias')
-		self.assertEqual(first_saved_group.tags, 'Teh; tags')
-		self.assertEqual(first_saved_group.description, 'Teh description')
-		self.assertEqual(second_saved_group.name, 'Teh name2')
-
+		
 
 class SearchTests(TestCase):
 
