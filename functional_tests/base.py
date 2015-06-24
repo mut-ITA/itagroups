@@ -25,14 +25,13 @@ class FunctionalTest(StaticLiveServerTestCase):
 		self.browser.quit()
 
 	def createGroupManually(self, name, alias, tags, description):
-		create_group_button = self.browser.find_element_by_id('id_create_group')
-		if create_group_button:
-			self.assertEqual(
-				create_group_button.get_attribute('type'),
-				'button'			
-				)
+		create_group_button = self.browser.find_element_by_id('id_create_group')	
+		self.assertEqual(
+			create_group_button.get_attribute('type'),
+			'button'			
+			)
 
-			create_group_button.click()
+		create_group_button.click()
 
 		group_name_input = self.browser.find_element_by_id('id_group_name')
 		group_name_input.send_keys(name)

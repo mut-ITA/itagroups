@@ -15,13 +15,3 @@ def create_sample_database():
 	second_group.tags = 'Teh; tags2'
 	second_group.description = 'Teh description2'
 	second_group.save()	
-
-def create_sample_POST_request():
-	request = HttpRequest()
-	request.method = 'POST'
-	request.POST['group_name'] = 'New group name'
-	request.POST['group_alias'] = 'newgroupalias'
-	request.POST['group_tags'] = 'New; group; tags'
-	request.POST['group_description'] = 'New group description'
-
-	return request

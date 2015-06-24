@@ -1,5 +1,4 @@
 from .base import FunctionalTest
-from unittest import skip
 
 class ValidationTest(FunctionalTest):	
 	
