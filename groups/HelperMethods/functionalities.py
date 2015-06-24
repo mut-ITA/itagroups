@@ -1,6 +1,6 @@
 from django.shortcuts import render
 
-from groups.models import Group
+from groups.models import Group, User
 
 def verification(request, name, alias, tags):
 		passed = True
