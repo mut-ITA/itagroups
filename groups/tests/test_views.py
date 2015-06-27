@@ -48,7 +48,7 @@ class CreateGroupTest(TestCase):
 
 	def sample_group_POST_response(self, name = 'New group name', 
 										 alias = 'newgroupalias',
-										 tags = 'New; group; tags', 
+										 tags = 'new; group; tags', 
 										 description = 'New group description'):
 		response = self.client.post(
 			'/groups/new', data={	'group_name':  name,
@@ -72,7 +72,7 @@ class CreateGroupTest(TestCase):
 		new_group = Group.objects.first()
 		self.assertEqual(new_group.name, 'New group name')
 		self.assertEqual(new_group.alias, 'newgroupalias')
-		self.assertEqual(new_group.tags, 'New; group; tags')
+		self.assertEqual(new_group.tags, 'new; group; tags')
 		self.assertEqual(new_group.description, 'New group description')
 
 
@@ -85,9 +85,6 @@ class CreateGroupTest(TestCase):
 		response = self.sample_group_POST_response(name = '', alias = '', tags = '', description = '')
 
 		self.assertEqual(Group.objects.count(), 0)
-
-
-
 
 
 	@skip

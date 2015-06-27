@@ -22,10 +22,10 @@ def verification(request, name, alias, tags):
 
 		#Alias originality
 		for g in Group.objects.all():
-			if alias == g.alias:
+			if alias is g.alias:
 				passed = False
 				group_alias_error_message = 'Já existe um grupo com esse alias'
-			if name == g.name:
+			if name is g.name:
 				passed = False
 				group_name_error_message = 'Já existe um grupo com esse nome'
 

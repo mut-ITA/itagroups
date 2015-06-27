@@ -27,19 +27,21 @@ def new_group(request):
 	tags = request.POST['group_tags']
 	description = request.POST['group_description']
 
-	# if verification(request, name, alias, tags):			
-	# 	return verification(request, name, alias, tags)
-
 	group = Group(	name = name,
 					alias = alias,
 					tags = tags,
 					description = description)
+	
 	try:
 		group.full_clean()
 		group.save()
 	except ValidationError:
 		error = "Nao pode-se adicionar um grupo vazio!"
 		return render(request, 'home.html', {'group_description_error_message': error})
+
+	if verification(request, name, alias, tags):			
+	 	return verification(request, name, alias, tags)
+
 	
 	#return render(request, 'home.html', {
 	# 	'group_success': True,
