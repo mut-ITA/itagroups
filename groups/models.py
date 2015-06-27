@@ -6,3 +6,8 @@ class Group(models.Model):
 	alias = models.TextField(default = '')
 	tags = models.TextField(default = '')
 	description = models.TextField(default = '')
+
+class User(models.Model):
+	access_token = models.TextField(default = '')
+	apelido = models.TextField(default = '')
+	turma = models.TextField(default = '')

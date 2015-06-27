@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect
-from django.http import Http404
 from django.core.exceptions import ValidationError
+from django.http import Http404, HttpResponse
 
-from groups.models import Group
+from groups.models import Group, User
 
 from groups.HelperMethods.functionalities import verification, search_groups
 
@@ -61,4 +61,42 @@ def view_group(request, group_alias):
 			})
 	return redirect('/')
 
+def verify_login(request):
 
+	user = request.POST['username_input']
+
+	response = redirect('/') if User.objects.filter(access_token = user) else redirect('/signup/')
+
+	#Cookie username
+
+	response.set_cookie('LOGSESSID', user)
+
+	return response
+
+def signup(request):
+	
+	if request.method == 'POST':
+
+		# Writing less
+		apelido = request.POST['apelido_input']
+		turma = request.POST['turma_input']
+
+		#Getting the cookie
+		username = request.COOKIES['LOGSESSID']
+
+		response = redirect('/')
+
+		if User.objects.filter(access_token = username):
+			response.set_cookie('LOGSESSID', username)
+
+			return response
+
+		user = User()
+		user.access_token = username
+		user.apelido = apelido
+		user.turma = turma
+		user.save()
+
+		return response
+
+	return render(request, 'signup.html')

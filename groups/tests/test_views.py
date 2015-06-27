@@ -5,8 +5,8 @@ from django.template.loader import render_to_string
 
 from unittest import skip
 
-from groups.views import home_page, view_group
-from groups.models import Group
+from groups.views import home_page, view_group, verify_login, signup
+from groups.models import Group, User
 from groups.HelperMethods.tests import create_sample_database
 from groups.HelperMethods.functionalities import search_groups
 
@@ -228,3 +228,59 @@ class SearchTests(TestCase):
 		found_groups = search_groups('description')
 		self.assertEqual(len(found_groups), 1)
 		self.assertTrue('tehalias' in [a.alias for a in found_groups])
+
+class UserAccountTest(TestCase):
+
+	def test_login_url_resolves_to_login_page(self):
+		found = resolve('/login')
+		self.assertEqual(found.func, verify_login)
+
+	def test_POST_new_user_redirects_signup(self):
+		response = self.client.post('/login', data = {'username_input': 'newUser'})
+
+		self.assertEqual(response.status_code, 302)
+
+		self.assertRedirects(response, '/signup/')
+
+	def test_POST_save_user_to_db(self):
+		self.client.cookies['LOGSESSID'] = 'User1'
+
+		response = self.client.post('/signup/', data = {'apelido_input': 'newApelido', 'turma_input': 'newTurma'})
+
+		self.assertEqual(User.objects.count(), 1)
+		new_user = User.objects.first()
+
+		self.assertEqual(new_user.access_token, 'User1')
+
+	def test_POST_user_redirects_home(self):
+		User.objects.create(access_token = 'oldUser')
+
+		response = self.client.post('/login', data = {'username_input': 'oldUser'})
+
+		self.assertEqual(response.status_code, 302)
+
+		self.assertRedirects(response, '/')
+
+	def test_signup_page_returns_correct_html(self):
+		request = HttpRequest()
+		response = signup(request)
+		expected_html = render_to_string('signup.html')
+		self.assertEqual(response.content.decode(), expected_html)
+
+	# def test_user_greeting_message_home_page(self):
+	# 	self.client.cookies['LOGSESSID'] = 'User1'
+
+	# 	response = self.client.get('/')
+
+	# 	self.fail(response.content.decode())
+	# 	self.assertContains(response, 'Bem vindo, User1')
+
+	# def test_login_creates_cookie(self):
+		
+	# 	response = self.client.post('/login', data = {'username_input': 'newUser'})
+
+	# 	cookies = response.client.cookies.items()
+
+	# 	self.assertEqual(len(cookies), 2)
+
+	# 	self.assertTrue('LOGSESSID' in [cks.key for cks in cookies] )
