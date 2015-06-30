@@ -26,11 +26,16 @@ class GroupModelTest(TestCase):
 			group.save()
 			group.full_clean()
 
+	def test_get_absolute_url(self):
+		create_sample_database()
+		group = Group.objects.all()[0]
+		self.assertEqual(group.get_absolute_url(), '/groups/%s/' % (group.alias))
+
 class UserModelTest(TestCase):
 
 	def test_saving_and_retrieving_users(self):
 		user1 = User.objects.create(access_token = 'Usuario', apelido = 'Guilhon', turma = 'T16')
-		user2 = User.objects.create(access_token = 'Usuario2', apelido = 'Guilhon2', turma = 'T162')
+		user2 = User.objects.create(access_token = 'Usuario2', apelido = 'Guilhon2', turma = 'T16')
 
 		saved_users = User.objects.all()
 		self.assertEqual(saved_users.count(), 2)
@@ -45,3 +50,7 @@ class UserModelTest(TestCase):
 		with self.assertRaises(ValidationError):
 			user.save()
 			user.full_clean()
+
+	def test_get_absolute_url(self):
+		user = User.objects.create()
+		self.assertEqual(user.get_absolute_url(), '/user/%s/' % (user.id))

@@ -1,8 +1,6 @@
 To do:
 
-	-Add user to groups (many to many DJANGO ORM)
-
-	-Refactor hardcoded urls (from home.html)
+	- User view page
 
 	-Google api =(
 
@@ -18,8 +16,12 @@ In Progress:
 
 Done:
 
+	-Add user to groups (many to many DJANGO ORM)
+
 	-Criar links dos grupos
 
 	- Verificacoes:
 		- Verificar aliases duplicados! =)
+
+	-Refactor hardcoded urls (from home.html)
 
