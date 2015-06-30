@@ -3,9 +3,11 @@ from django.test import TestCase
 from django.http import HttpRequest
 from django.template.loader import render_to_string
 
+from unittest import skip
+
 from groups.views import home_page, view_group, verify_login, signup
 from groups.models import Group, User
-from groups.HelperMethods.tests import create_sample_database, create_sample_POST_request
+from groups.HelperMethods.tests import create_sample_database
 from groups.HelperMethods.functionalities import search_groups
 
 # Create your tests here.
@@ -44,82 +46,94 @@ class ViewGroupTests(TestCase):
 
 class CreateGroupTest(TestCase):
 
-	def test_create_group_form_can_save_POST(self):
-		request = create_sample_POST_request()
+	def sample_group_POST_response(self, name = 'New group name', 
+										 alias = 'newgroupalias',
+										 tags = 'new; group; tags', 
+										 description = 'New group description'):
+		response = self.client.post(
+			'/groups/new', data={	'group_name':  name,
+									'group_alias': alias,
+									'group_tags': tags,
+									'group_description': description
+			})
 
-		response = home_page(request)
+		return response
 
-		self.assertIn('New group name', response.content.decode())
+	def test_create_group_form_redirects_after_POST(self):
+		response = self.sample_group_POST_response()
 
-		#self.assertEqual(response.status_code, 302)
-		#self.assertEqual(response['location'], '/')
+		self.assertEqual(response.status_code, 302)
+		self.assertRedirects(response, '/')
 
 	def test_create_group_POST_save_to_db(self):
-		request = create_sample_POST_request()
-
-		response = home_page(request)
+		response = self.sample_group_POST_response()
 
 		self.assertEqual(Group.objects.count(), 1)
 		new_group = Group.objects.first()
 		self.assertEqual(new_group.name, 'New group name')
 		self.assertEqual(new_group.alias, 'newgroupalias')
-		self.assertEqual(new_group.tags, 'New; group; tags')
+		self.assertEqual(new_group.tags, 'new; group; tags')
 		self.assertEqual(new_group.description, 'New group description')
 
+
+	def test_create_empty_group_validation_error(self):
+		response = self.sample_group_POST_response(name = '', alias = '', tags = '', description = '')
+
+		self.assertVerificationError(response, 'Nao pode-se adicionar um grupo vazio!')
+
+	def test_create_empty_group_doesnt_save_db(self):
+		response = self.sample_group_POST_response(name = '', alias = '', tags = '', description = '')
+
+		self.assertEqual(Group.objects.count(), 0)
+
+
+	@skip
 	def test_create_group_correct_name(self):
 		#Only restriction: characters => 3 < 27 
-		request = create_sample_POST_request()
-		
-		request.POST['group_name'] = 'Newgroupnamewith28characters'
-		response = home_page(request)
+
+		response = self.sample_group_POST_response(name = 'Newgroupnamewith28characters')
 		self.assertVerificationError(response, 'O nome do grupo deve possuir entre 3 e 27 caracteres')
 		self.assertEqual(Group.objects.count(), 0)
 
-		request.POST['group_name'] = 'da'
-		response = home_page(request)
+		response = self.sample_group_POST_response(name = 'da')
 		self.assertVerificationError(response, 'O nome do grupo deve possuir entre 3 e 27 caracteres')
 		self.assertEqual(Group.objects.count(), 0)
 
+	@skip
 	def test_create_group_correct_alias(self):
 		#Restrictions: No upper case allowed, no symbols, no spaces, <20 characters
-		request = create_sample_POST_request()
 
-		request.POST['group_alias'] = 'UPPERCASETEST'
-		response = home_page(request)
+		response = self.sample_group_POST_response(alias = 'UPPERCASETEST')
 		self.assertVerificationError(response, 'Minusculo, sem simbolos, sem espaço')
 		self.assertEqual(Group.objects.count(), 0)
 
-		request.POST['group_alias'] = 'space test'
-		response = home_page(request)
+		response = self.sample_group_POST_response(alias = 'space test')
 		self.assertVerificationError(response, 'Minusculo, sem simbolos, sem espaço')
 		self.assertEqual(Group.objects.count(), 0)
 
-		request.POST['group_alias'] = 'alphanumeric/test/'
-		response = home_page(request)
+		response = self.sample_group_POST_response(alias = 'alphanumeric/test/')
 		self.assertVerificationError(response, 'Minusculo, sem simbolos, sem espaço')
 		self.assertEqual(Group.objects.count(), 0)
 
-		request.POST['group_alias'] = '12345678910111213test'
-		response = home_page(request)
+		response = self.sample_group_POST_response(alias = '12345678910111213test')
 		self.assertVerificationError(response, 'Minusculo, sem simbolos, sem espaço')
 		self.assertEqual(Group.objects.count(), 0)
 		
-
+	@skip
 	def test_create_group_correct_tag(self):
 		#Restriction: each tag => 3 < 12, no equal tags
-		request = create_sample_POST_request()
 		
-		request.POST['group_tags'] = 'da; tags; like; a; newbie'
-		response = home_page(request)
+		response = self.sample_group_POST_response(tags = 'da; tags; like; a; newbie')
 		self.assertVerificationError(response, 'Todas as tags devem possuir entre 3 e 12 caracteres')
 		self.assertEqual(Group.objects.count(), 0)
 
-		request.POST['group_tags'] = 'dum; dee; dum'
-		response = home_page(request)
+		response = self.sample_group_POST_response(tags = 'dum; dee; dum')
 		self.assertVerificationError(response, 'Não podem haver tags iguais')
 		self.assertEqual(Group.objects.count(), 0)
 
 	def assertVerificationError(self, response, expected_error):
+		self.assertEqual(response.status_code, 200)
+		self.assertTemplateUsed(response, 'home.html')
 		self.assertContains(response, expected_error)
 
 
