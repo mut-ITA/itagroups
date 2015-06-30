@@ -5,7 +5,7 @@ from django.template.loader import render_to_string
 
 from unittest import skip
 
-from groups.views import home_page, view_group, verify_login, signup
+from groups.views import home_page, view_group, verify_login, signup, logout
 from groups.models import Group, User
 from groups.HelperMethods.tests import create_sample_database, create_sample_user_database
 from groups.HelperMethods.functionalities import search_groups
@@ -259,6 +259,10 @@ class UserAccountTest(TestCase):
 		found = resolve('/login')
 		self.assertEqual(found.func, verify_login)
 
+	def test_logout_url_resolves_to_login_page(self):
+		found = resolve('/logout')
+		self.assertEqual(found.func, logout)
+
 	def test_POST_new_user_redirects_signup(self):
 		response = self.client.post('/login', data = {'username_input': 'newUser'})
 
@@ -290,6 +294,23 @@ class UserAccountTest(TestCase):
 		response = signup(request)
 		expected_html = render_to_string('signup.html')
 		self.assertEqual(response.content.decode(), expected_html)
+
+	def test_logout_removes_cookies(self):
+		self.client.cookies['LOGSESSID'] = 'Username1'
+
+		response = self.client.get('/logout')
+		cookies = response.client.cookies.items()
+
+		self.assertTrue("''" in s for s in [k[1] for k in cookies])
+
+	def test_logout_redirects_to_home(self):
+		response = self.client.get('/logout')
+
+		self.assertEqual(response.status_code, 302)
+
+		self.assertRedirects(response, '/')
+
+
 
 	# def test_user_greeting_message_home_page(self):
 	# 	self.client.cookies['LOGSESSID'] = 'User1'

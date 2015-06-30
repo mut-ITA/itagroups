@@ -1,10 +1,12 @@
 from django.shortcuts import render, redirect
 from django.core.exceptions import ValidationError
 from django.http import Http404, HttpResponse
+from django.contrib.auth.views import logout
 
 from groups.models import Group, User
 
 from groups.HelperMethods.functionalities import verification, search_groups
+
 
 
 def home_page(request):
@@ -66,6 +68,7 @@ def view_group(request, group_alias):
 			})
 	return redirect('home')
 
+
 def verify_login(request):
 
 	user = request.POST['username_input']
@@ -77,6 +80,14 @@ def verify_login(request):
 	response.set_cookie('LOGSESSID', user)
 
 	return response
+
+
+def logout(self):
+	response = redirect ('home')
+	response.delete_cookie('LOGSESSID')
+
+	return response
+
 
 def signup(request):
 	
