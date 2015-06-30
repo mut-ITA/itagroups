@@ -1,6 +1,7 @@
 import sys
 from selenium import webdriver
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from groups.models import Group, User
 
 class FunctionalTest(StaticLiveServerTestCase):
 	@classmethod
@@ -52,3 +53,19 @@ class FunctionalTest(StaticLiveServerTestCase):
 			)
 		create_group_button.click()
 		self.browser.implicitly_wait(5)
+
+
+	def create_sample_group_db(self, name, alias, tags, description):
+		sample_group = Group()
+		sample_group.name = name
+		sample_group.alias = alias
+		sample_group.tags = tags
+		sample_group.description = description 
+		sample_group.save()
+
+	def create_sample_user_db(self, access_token, apelido, turma):
+		sample_user = User()
+		sample_user.access_token = access_token
+		sample_user.apelido = apelido
+		sample_user.turma = turma
+		sample_user.save()

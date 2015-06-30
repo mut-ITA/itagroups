@@ -1,85 +1,86 @@
-{% extends 'base.html' %}
-{% block title %} Grupos ITA {% endblock %}
-{% block body %}
+{% extends 'base_view.html' %}
 
-    <br>
-    <div class="container">
-        <div class="row">
-            <div class = "text-right">
+{% block view_title %} Grupos de Email do ITA {% endblock %}
 
-            </div>
-            <div class="col-md-6 col-md-offset-3 jumbotron">
-                <div class = "text-center">
-                    <h1> Grupos de Email do ITA </h1>
-                    <br> 
-                    <form>
-                        <div id="id_search_form">
-                        <input  type="text" 
-                                name="search_group" 
-                                id="id_search_group" 
-                                class="form-control input-lg"
-                        />
-                        <button type="submit" id="id_search_button" value="search_button"> Pesquisar </button> 
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>  
-    <br>
-    <br>
-    <div class="row">
-        <div class="col-md-6 col-md-offset-3">
-            <table id="id_search_list" class="table">
-                {% if groups %}
-                <tr>
-                    <td> # </td>
-                    <td> Name </td>
-                    <td> Alias</td>
-                    <td> Description </td>
-                    <td></td>
-                </tr>
-                {% endif %}
-                {% for group in groups %}
-                <tr>
-                    <td> {{ forloop.counter }} </td>
-                    <td> {{ group.name }} </td>
-                    <td id="table_alias"> {{ group.alias }}</td>
-                    <td> {{ group.description }}</td>
-                    <td> <a href={% url 'view_group' group.alias %}> <button type="submit" id="table_view_button">View Group</button></a></td>
-                </tr>
-                {% endfor %}
-            </table>
+{% block view_search %} 
+<form class="form-inline">
+    <div id="id_search_form">
+    <input  type="text" 
+            name="search_group" 
+            id="id_search_group" 
+            class="form-control input-lg"
+    />
+    <button type="submit" 
+            id="id_search_button" 
+            class = "btn btn-success btn-lg" 
+            value="search_button"> 
+            Pesquisar  </button> 
+    </div>
+</form>
+{% endblock %}
+
+{% block view_main_button %} 
+
+<div class="row">
+    <div class="col-md-6 col-md-offset-3">
+        <div class = "text-center">
+            <span class="createGroup">
+                <button type="button" 
+                        id="id_create_group"
+                        class="btn btn-info btn-lg" 
+                        data-toggle="modal" 
+                        data-target="#createGroupModal">
+                    Criar Grupo
+                </button>
+            </span> 
         </div>
     </div>
+</div>
 
-    <div class="row">
-        <div class="col-md-6 col-md-offset-3">
-            <div class = "text-center">
-                <span class="createGroup">
-                    <button type="button" 
-                            id="id_create_group"
-                            class="btn btn-info btn-lg" 
-                            data-toggle="modal" 
-                            data-target="#createGroupModal">
-                        Criar Grupo
-                    </button>
-                </span> 
-            </div>
-        </div>
+{% endblock %}
+
+{% block view_main_table %} 
+
+<div class="row">
+    <div class="col-md-6 col-md-offset-3">
+        <table id="id_search_list" class="table">
+            {% if groups %}
+            <tr>
+                <td> # </td>
+                <td> Name </td>
+                <td> Alias</td>
+                <td> Description </td>
+                <td></td>
+            </tr>
+            {% endif %}
+            {% for group in groups %}
+            <tr>
+                <td> {{ forloop.counter }} </td>
+                <td> {{ group.name }} </td>
+                <td id="table_alias"> {{ group.alias }}</td>
+                <td> {{ group.description }}</td>
+                <td> <a href="/groups/{{ group.alias }}/"> <button type="submit" id="table_view_button">View Group</button></a></td>
+            </tr>
+            {% endfor %}
+        </table>
     </div>
+</div>
 
-    {% if open_popup %}
-        <script>
-            $(document).ready(function(){
-                $("#createGroupModal").modal('show');
-            });
-        </script>
-    {% endif %}
+{% endblock %}
 
-    <div id="createGroupModal" class="modal fade" role="dialog">
-        <div class="modal-dialog">
-            <div class="modal-content">
+{% block view_modal %} 
+
+{% if open_popup %}
+    <script>
+        $(document).ready(function(){
+            $("#createGroupModal").modal('show');
+        });
+    </script>
+{% endif %}
+
+<div id="createGroupModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                     {% if group_success %}
@@ -179,4 +180,6 @@
             </div>
         </div>
     </div>
+</div>
+
 {% endblock %}

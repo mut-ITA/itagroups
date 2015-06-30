@@ -7,7 +7,7 @@ from unittest import skip
 
 from groups.views import home_page, view_group, verify_login, signup
 from groups.models import Group, User
-from groups.HelperMethods.tests import create_sample_database
+from groups.HelperMethods.tests import create_sample_database, create_sample_user_database
 from groups.HelperMethods.functionalities import search_groups
 
 # Create your tests here.
@@ -26,6 +26,13 @@ class HomePageTest(TestCase):
 
 
 class ViewGroupTests(TestCase):
+
+	def sample_group_view_POST_response(self, alias):
+		response = self.client.post(
+			'/groups/'+ alias + '/', data={'access_token': 'Username1'
+			})
+
+		return response
 	
 	def test_view_page_returns_correct_html(self):
 		create_sample_database()
@@ -42,6 +49,22 @@ class ViewGroupTests(TestCase):
 		response = self.client.get('/groups/this_is_a_wrong_alias/')
 
 		self.assertRedirects(response, '/')
+
+	def test_POST_user_join_group_db(self):
+		create_sample_database()
+		create_sample_user_database()
+
+		saved_groups = Group.objects.all()
+
+		self.client.cookies['LOGSESSID'] = 'Username1'
+
+		response = self.sample_group_view_POST_response(saved_groups[0].alias)
+
+		self.assertEqual(saved_groups[0].user_set.all().count(), 1)
+
+		self.assertEqual(saved_groups[0].user_set.all()[0].access_token, "Username1")
+
+
 		
 
 class CreateGroupTest(TestCase):
@@ -276,12 +299,12 @@ class UserAccountTest(TestCase):
 	# 	self.fail(response.content.decode())
 	# 	self.assertContains(response, 'Bem vindo, User1')
 
-	# def test_login_creates_cookie(self):
+	def test_login_creates_cookie(self):
 		
-	# 	response = self.client.post('/login', data = {'username_input': 'newUser'})
+		response = self.client.post('/login', data = {'username_input': 'newUser'})
 
-	# 	cookies = response.client.cookies.items()
+		cookies = response.client.cookies.items()
 
-	# 	self.assertEqual(len(cookies), 2)
+		self.assertEqual(len(cookies), 1)
 
-	# 	self.assertTrue('LOGSESSID' in [cks.key for cks in cookies] )
+		self.assertTrue('LOGSESSID' in [k[0] for k in cookies])

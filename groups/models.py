@@ -15,6 +15,9 @@ class User(models.Model):
 	access_token = models.TextField(default = '')
 	apelido = models.TextField(default = '')
 	turma = models.TextField(default = '')
+	groups = models.ManyToManyField(Group)
 
 	def get_absolute_url(self):
 		return reverse('view_user', args=[self.id])
+
+	

@@ -56,8 +56,13 @@ def home_page(request):
 def view_group(request, group_alias):
 	found_groups = search_groups(group_alias)
 	if found_groups:
-		return render(request, 'view.html', {
-			'group_name': found_groups[0].name
+		if request.method == 'POST':
+			username = request.COOKIES['LOGSESSID']
+			if User.objects.filter(access_token = username):
+				User.objects.filter(access_token = username)[0].groups.add(found_groups[0])
+		return render(request, 'view_group.html', {
+			'group_name': found_groups[0].name,
+			'users': found_groups[0].user_set.all()
 			})
 	return redirect('home')
 

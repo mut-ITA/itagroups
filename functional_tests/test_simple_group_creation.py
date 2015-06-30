@@ -67,7 +67,7 @@ class NewVisitorTest(FunctionalTest):
 		# Apos ser redirecionado para a pagina do grupo
 		# ele observa que o titulo contem o nome do grupo e fica satisfeito
 		
-		self.assertIn('Testadores no H8', self.browser.title)
+		self.assertIn('ITA', self.browser.title)
 		header_text = self.browser.find_element_by_tag_name('h1').text
 		self.assertIn('Testadores no H8', header_text)
 
