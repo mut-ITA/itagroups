@@ -40,7 +40,7 @@ def home_page(request):
 		# 	'group_alias': group.alias,
 		# 	'group_description': group.description
 		# 	})
-		return redirect('/')
+		return redirect('home')
 
 	if request.method == 'GET':
 		search_tags = request.GET.get('search_group', '')
@@ -59,13 +59,13 @@ def view_group(request, group_alias):
 		return render(request, 'view.html', {
 			'group_name': found_groups[0].name
 			})
-	return redirect('/')
+	return redirect('home')
 
 def verify_login(request):
 
 	user = request.POST['username_input']
 
-	response = redirect('/') if User.objects.filter(access_token = user) else redirect('/signup/')
+	response = redirect('home') if User.objects.filter(access_token = user) else redirect('sign_up')
 
 	#Cookie username
 
@@ -84,7 +84,7 @@ def signup(request):
 		#Getting the cookie
 		username = request.COOKIES['LOGSESSID']
 
-		response = redirect('/')
+		response = redirect('home')
 
 		if User.objects.filter(access_token = username):
 			response.set_cookie('LOGSESSID', username)
