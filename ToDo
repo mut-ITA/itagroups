@@ -1,6 +1,6 @@
 To do:
 
-	-Sign in and Sign up
+	-Add user to groups (many to many DJANGO ORM)
 
 	-Refactor hardcoded urls (from home.html)
 
@@ -10,7 +10,11 @@ To do:
 
 In Progress:
 
+	
+	-Sign in and Sign up
+		- Missing: Sign Out (Mut)
 
+	-Refactor group verifications (Mut)
 
 Done:
 

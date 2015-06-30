@@ -102,7 +102,13 @@
                         <div class="control-group">
                           <label class="control-label" for="id_group_name">Nome:</label>
                           <div class="controls">
-                            <input required="" name="group_name" id="id_group_name" type="text" class="form-control" class="input-medium">
+                            <input  required="" 
+                                    name="group_name" 
+                                    id="id_group_name" 
+                                    type="text" 
+                                    class="form-control" 
+                                    class="input-medium"
+                                    value={{ group_name_value }}>
                             {% if group_name_error_message %}
                                 <div class="form-group has-error">
                                     <span class="help-block">{{ group_name_error_message }}</span>
@@ -113,7 +119,14 @@
                         <div class="control-group">
                           <label class="control-label" for="id_group_alias">Alias:</label>
                           <div class="controls">
-                            <input required="" name="group_alias" id="id_group_alias" type="text" class="form-control" placeholder="itagroups_alias@googlegroups.com" class="input-medium" value={{ group_alias_placeholder}}>
+                            <input  required=""
+                                    name="group_alias" 
+                                    id="id_group_alias"
+                                    type="text" 
+                                    class="form-control" 
+                                    placeholder="itagroups_alias@googlegroups.com" 
+                                    class="input-medium" 
+                                    value={{ group_alias_value }}>
                             {% if group_alias_error_message %}
                                 <div class="form-group has-error">
                                     <span class="help-block">{{ group_alias_error_message }}</span>
@@ -124,7 +137,14 @@
                         <div class="control-group">
                           <label class="control-label" for="id_group_tags">Tags:</label>
                           <div class="controls">
-                            <input required="" name="group_tags" id="id_group_tags" type="text" class="form-control" placeholder="Tags; separadas; por; ponto-e-virgula;" class="input-medium">
+                            <input  required="" 
+                                    name="group_tags" 
+                                    id="id_group_tags" 
+                                    type="text" 
+                                    class="form-control" 
+                                    placeholder="Tags; separadas; por; ponto-e-virgula;" 
+                                    class="input-medium"
+                                    value={{ group_tags_value }}>
                             {% if group_tags_error_message %}
                                 <div class="form-group has-error">
                                     <span class="help-block">{{ group_tags_error_message }}</span>
@@ -135,7 +155,12 @@
                         <div class="control-group">
                           <label class="control-label" for="id_group_description">Descricao:</label>
                           <div class="controls">
-                            <textarea required="" name="group_description" id="id_group_description" class="form-control" class="input-medium" rows="3"></textarea>
+                            <textarea   required="" 
+                                        name="group_description" 
+                                        id="id_group_description" 
+                                        class="form-control" 
+                                        class="input-medium" 
+                                        rows="3">{{ group_description_value }}</textarea>
                             {% if group_description_error_message %}
                                 <div class="form-group has-error">
                                     <span class="help-block">{{ group_description_error_message }}</span>

@@ -87,7 +87,6 @@ class CreateGroupTest(TestCase):
 		self.assertEqual(Group.objects.count(), 0)
 
 
-	@skip
 	def test_create_group_correct_name(self):
 		#Only restriction: characters => 3 < 27 
 
@@ -99,7 +98,7 @@ class CreateGroupTest(TestCase):
 		self.assertVerificationError(response, 'O nome do grupo deve possuir entre 3 e 27 caracteres')
 		self.assertEqual(Group.objects.count(), 0)
 
-	@skip
+
 	def test_create_group_correct_alias(self):
 		#Restrictions: No upper case allowed, no symbols, no spaces, <20 characters
 
@@ -119,7 +118,7 @@ class CreateGroupTest(TestCase):
 		self.assertVerificationError(response, 'Minusculo, sem simbolos, sem espaço')
 		self.assertEqual(Group.objects.count(), 0)
 		
-	@skip
+
 	def test_create_group_correct_tag(self):
 		#Restriction: each tag => 3 < 12, no equal tags
 		

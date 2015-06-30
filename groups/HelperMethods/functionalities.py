@@ -2,7 +2,7 @@ from django.shortcuts import render
 
 from groups.models import Group, User
 
-def verification(request, name, alias, tags):
+def verification(request, name, alias, tags, description):
 		passed = True
 		group_name_error_message = ''
 		group_alias_error_message = ''
@@ -51,7 +51,11 @@ def verification(request, name, alias, tags):
 					'group_name_error_message': group_name_error_message,
 					'group_alias_error_message': group_alias_error_message,
 					'group_tags_error_message': group_tags_error_message,
-					'group_description_error_message': group_description_error_message
+					'group_description_error_message': group_description_error_message,
+					'group_name_value': name,
+					'group_alias_value': alias,
+					'group_tags_value': tags,
+					'group_description_value': description
 					})
 
 def search_groups(search_tags):	

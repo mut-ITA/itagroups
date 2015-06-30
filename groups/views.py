@@ -28,8 +28,8 @@ def home_page(request):
 			error = "Nao pode-se adicionar um grupo vazio!"
 			return render(request, 'home.html', {'group_description_error_message': error})
 
-		if verification(request, name, alias, tags):			
-		 	return verification(request, name, alias, tags)
+		if verification(request, name, alias, tags, description):			
+		 	return verification(request, name, alias, tags, description)
 
 		
 		#return render(request, 'home.html', {
