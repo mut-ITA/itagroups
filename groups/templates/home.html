@@ -4,17 +4,19 @@
 
 {% block view_search %} 
 <form class="form-inline">
-    <div id="id_search_form">
-    <input  type="text" 
-            name="search_group" 
-            id="id_search_group" 
-            class="form-control input-lg"
-    />
-    <button type="submit" 
-            id="id_search_button" 
-            class = "btn btn-success btn-lg" 
-            value="search_button"> 
-            Pesquisar  </button> 
+    <div class = "input-group" id="id_search_form">
+        <input  type="text" 
+                name="search_group" 
+                id="id_search_group" 
+                class="form-control input-lg"
+        />
+        <div class = "input-group-btn">
+            <button type="submit" 
+                    id="id_search_button" 
+                    class = "btn btn-success btn-lg" 
+                    value="search_button"> 
+                    <span class="glyphicon glyphicon-search"></span></button>
+        </div>
     </div>
 </form>
 {% endblock %}

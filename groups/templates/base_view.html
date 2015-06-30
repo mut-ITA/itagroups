@@ -2,6 +2,63 @@
 {% block title %} Grupos ITA {% endblock %}
 {% block body %}
 
+<script type="text/javascript">
+        $(document).ready(function(){
+            if($.cookie('LOGSESSID') && $.cookie('LOGSESSID') != ""){
+                $('#id_greeting_text').html('Bem vindo, ' + $.cookie('LOGSESSID'));
+                $('#id_user_login').hide();
+            }
+            else {
+                $('#id_greeting_text').hide();
+                $('#id_user_login').show();
+                
+            }
+        }
+        );
+        
+</script>
+
+<nav class="navbar navbar-default" role="navigation">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+      <span class="sr-only">Toggle navigation</span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      </button>
+      <div class="navbar-brand" >ITA</div>
+    </div>
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li class="active"><a href={% url 'home' %}><i class="glyphicon glyphicon-home"></i> Home</a></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li class="dropdown">
+         <div class= "nav navbar-nav" id = 'id_user_login'>
+                <form method="POST" action={% url 'verify_login' %}>
+                    <input required="" name="username_input" id="id_username_input" type="text" placeholder="Username">
+                    <button type="submit" class="btn btn-danger" id="id_sign_in_button">Log me in!</button>
+                    {% csrf_token %}   
+                </form>
+            </div>
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" id = "id_greeting_text"><span class="caret">
+          </span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li><a href="#"><i class="glyphicon glyphicon-user"></i> Meus Grupos</a></li>
+            <li class="divider"></li>
+            <li><a href={% url "logout" %}><i class="glyphicon glyphicon-off"></i> Sair</a></li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+    <!-- /.navbar-collapse -->
+  </div>
+  <!-- /.container-fluid -->
+</nav>
+
     <br>
     <div class="container">
         <div class="row">
@@ -14,8 +71,7 @@
                     {% block view_main_button %} {% endblock %}
                 </div>
             </div>
-        </div>
-    </div>  
+        </div> 
     <br>
     <br>
     {% block view_main_table %} {% endblock %}
