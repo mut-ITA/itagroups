@@ -38,11 +38,15 @@
       <ul class="nav navbar-nav navbar-right">
         <li class="dropdown">
          <div class= "nav navbar-nav" id = 'id_user_login'>
-                <form method="POST" action={% url 'verify_login' %}>
-                    <input required="" name="username_input" id="id_username_input" type="text" placeholder="Username">
-                    <button type="submit" class="btn btn-danger" id="id_sign_in_button">Log me in!</button>
-                    {% csrf_token %}   
-                </form>
+                <form class = "form-inline" method="POST" action={% url 'verify_login' %}>
+                        <div class = "input-group">
+                            <input class = "input-lg" required="" name="username_input" id="id_username_input" type="text" placeholder="Username">
+                            <div class="input-group-btn">
+                                <button type="submit" class="btn btn-danger btn-lg" id="id_sign_in_button">Log me in!</button>
+                        </div>
+                        {% csrf_token %}   
+                    </form>
+                </div>
             </div>
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" id = "id_greeting_text"><span class="caret">
           </span></a>
