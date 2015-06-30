@@ -51,10 +51,10 @@ class CreateGroupTest(TestCase):
 										 tags = 'new; group; tags', 
 										 description = 'New group description'):
 		response = self.client.post(
-			'/groups/new', data={	'group_name':  name,
-									'group_alias': alias,
-									'group_tags': tags,
-									'group_description': description
+			'/', data={	'group_name':  name,
+						'group_alias': alias,
+						'group_tags': tags,
+						'group_description': description
 			})
 
 		return response

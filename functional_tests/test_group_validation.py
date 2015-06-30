@@ -34,7 +34,8 @@ class ValidationTest(FunctionalTest):
 				'id_tags_error': 'Todas as tags devem possuir entre 3 e 12 caracteres',
 			}
 			e_id = e.get_attribute('id')
-			self.assertEqual(e.text, error_text['e_id'])
+			if e_id:
+				self.assertEqual(e.text, error_text[e_id])
 
 		self.assertEqual(self.browser.find_element_by_id('id_group_name').text, "Pessoas mais chatas entre todo mundo do universo todo")
 		self.assertEqual(self.browser.find_element_by_id('id_group_alias').text, "nao entendo ingles")

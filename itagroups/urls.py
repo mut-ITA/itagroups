@@ -7,7 +7,6 @@ urlpatterns = [
     # Examples:
     url(r'^$', views.home_page, name='home'),
     url(r'^groups/(.+)/$', views.view_group, name='view_group'),
-    url(r'^groups/new$', views.new_group, name='new_group'),
     url(r'^login$', views.verify_login, name='verify_login'),
     url(r'^signup/$', views.signup, name='sign_up')
 ]

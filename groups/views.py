@@ -10,6 +10,38 @@ from groups.HelperMethods.functionalities import verification, search_groups
 def home_page(request):
 
 	# Home page get is searching for groups
+	if request.method == 'POST':
+		name = request.POST['group_name']
+		alias = request.POST['group_alias']
+		tags = request.POST['group_tags']
+		description = request.POST['group_description']
+
+		group = Group(	name = name,
+						alias = alias,
+						tags = tags,
+						description = description)
+		
+		try:
+			group.full_clean()
+			group.save()
+		except ValidationError:
+			error = "Nao pode-se adicionar um grupo vazio!"
+			return render(request, 'home.html', {'group_description_error_message': error})
+
+		if verification(request, name, alias, tags):			
+		 	return verification(request, name, alias, tags)
+
+		
+		#return render(request, 'home.html', {
+		# 	'group_success': True,
+		# 	'open_popup': True, 
+		# 	'group_name': group.name,
+		# 	'group_tags': group.tags,
+		# 	'group_alias': group.alias,
+		# 	'group_description': group.description
+		# 	})
+		return redirect('/')
+
 	if request.method == 'GET':
 		search_tags = request.GET.get('search_group', '')
 		if search_tags != '':
@@ -20,38 +52,6 @@ def home_page(request):
 
 	return render(request, 'home.html')
 
-def new_group(request):
-	# Writing less
-	name = request.POST['group_name']
-	alias = request.POST['group_alias']
-	tags = request.POST['group_tags']
-	description = request.POST['group_description']
-
-	group = Group(	name = name,
-					alias = alias,
-					tags = tags,
-					description = description)
-	
-	try:
-		group.full_clean()
-		group.save()
-	except ValidationError:
-		error = "Nao pode-se adicionar um grupo vazio!"
-		return render(request, 'home.html', {'group_description_error_message': error})
-
-	if verification(request, name, alias, tags):			
-	 	return verification(request, name, alias, tags)
-
-	
-	#return render(request, 'home.html', {
-	# 	'group_success': True,
-	# 	'open_popup': True, 
-	# 	'group_name': group.name,
-	# 	'group_tags': group.tags,
-	# 	'group_alias': group.alias,
-	# 	'group_description': group.description
-	# 	})
-	return redirect('/')
 	
 def view_group(request, group_alias):
 	found_groups = search_groups(group_alias)

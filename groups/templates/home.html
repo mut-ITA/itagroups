@@ -95,7 +95,7 @@
                             <a href="/"><button type="button" class="btn btn-success" data-dismiss="modal">  </a>Close</button>
                         </div>
                     {% else %}    
-                    <form method="POST" action="/groups/new" class="form-horizontal">
+                    <form method="POST" action="/" class="form-horizontal">
                         <fieldset>
                         <!-- Sign In Form -->
                         <!-- Text input-->
@@ -113,7 +113,7 @@
                         <div class="control-group">
                           <label class="control-label" for="id_group_alias">Alias:</label>
                           <div class="controls">
-                            <input required="" name="group_alias" id="id_group_alias" type="text" class="form-control" placeholder="itagroups_alias@googlegroups.com" class="input-medium">
+                            <input required="" name="group_alias" id="id_group_alias" type="text" class="form-control" placeholder="itagroups_alias@googlegroups.com" class="input-medium" value={{ group_alias_placeholder}}>
                             {% if group_alias_error_message %}
                                 <div class="form-group has-error">
                                     <span class="help-block">{{ group_alias_error_message }}</span>
