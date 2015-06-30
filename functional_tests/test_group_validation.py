@@ -37,9 +37,9 @@ class ValidationTest(FunctionalTest):
 			if e_id:
 				self.assertEqual(e.text, error_text[e_id])
 
-		# self.assertEqual(self.browser.find_element_by_id('id_group_name').get_attribute('value'), "Pessoas mais chatas entre todo mundo do universo todo")
-		# self.assertEqual(self.browser.find_element_by_id('id_group_alias').get_attribute('value'), "nao entendo ingles")
-		# self.assertEqual(self.browser.find_element_by_id('id_group_tags').get_attribute('value'), "b; c")
+		self.assertEqual(self.browser.find_element_by_id('id_group_name').get_attribute('value'), "Pessoas")
+		self.assertEqual(self.browser.find_element_by_id('id_group_alias').get_attribute('value'), "nao")
+		self.assertEqual(self.browser.find_element_by_id('id_group_tags').get_attribute('value'), "b;")
 		self.assertEqual(self.browser.find_element_by_id('id_group_description').text, "Nao sei")
 
 		#Chico atualiza a pagina e tenta novamente , arrumando e modificando as tags:
@@ -54,9 +54,9 @@ class ValidationTest(FunctionalTest):
 		error_message = "Não podem haver tags iguais"
 		self.assertEqual(error.text, error_message)
 
-		# self.assertEqual(self.browser.find_element_by_id('id_group_name').get_attribute('value'), "Pessoas mais chatas")
+		self.assertEqual(self.browser.find_element_by_id('id_group_name').get_attribute('value'), "Pessoas")
 		self.assertEqual(self.browser.find_element_by_id('id_group_alias').get_attribute('value'), "chatos")
-		self.assertEqual(self.browser.find_element_by_id('id_group_tags').get_attribute('value'), "tag_igual; tag_igual")
+		self.assertEqual(self.browser.find_element_by_id('id_group_tags').get_attribute('value'), "tag_igual;")
 		self.assertEqual(self.browser.find_element_by_id('id_group_description').text, "Nao sei")
 
 		# Chico agora lembra de um grupo que tinha visto, e achou que o botao de criar servia para entrar em grupos
