@@ -85,7 +85,7 @@
         <!-- Sign in button -->
 
         <div class = "text-right" id = 'id_user_login'>
-            <form method="POST" action="/login">
+            <form method="POST" action={% url 'verify_login' %}>
                 <input required="" name="username_input" id="id_username_input" type="text" placeholder="Username">
                 <button type="submit" class="btn btn-success" id="id_sign_in_button">Log me in!</button>
                 {% csrf_token %}   

@@ -46,7 +46,7 @@
                     <td> {{ group.name }} </td>
                     <td id="table_alias"> {{ group.alias }}</td>
                     <td> {{ group.description }}</td>
-                    <td> <a href="/groups/{{ group.alias }}/"> <button type="submit" id="table_view_button">View Group</button></a></td>
+                    <td> <a href={% url 'view_group' group.alias %}> <button type="submit" id="table_view_button">View Group</button></a></td>
                 </tr>
                 {% endfor %}
             </table>
@@ -95,7 +95,7 @@
                             <a href="/"><button type="button" class="btn btn-success" data-dismiss="modal">  </a>Close</button>
                         </div>
                     {% else %}    
-                    <form method="POST" action="/" class="form-horizontal">
+                    <form method="POST" action={% url 'home' %} class="form-horizontal">
                         <fieldset>
                         <!-- Sign In Form -->
                         <!-- Text input-->
