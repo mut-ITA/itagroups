@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %} Grupos ITA {% endblock %}
+{% block body %}
+
+<script>
+	$(document).ready(function(){
+	    $("#FirstSignInModal").modal('show');
+	});
+</script>
+
+<div id="FirstSignInModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                        <h2 class="modal-title">Primeiro Login</h2>
+                </div>
+                <div class="modal-body"> 
+                    <form method="POST" class="form-horizontal">
+                        <fieldset>
+                        <!-- Sign In Form -->
+                        <!-- Text input-->
+                        <div class="control-group">
+                          <label class="control-label" for="id_apelido">Apelido:</label>
+                          <div class="controls">
+                            <input required="" name="apelido_input" id="id_apelido_input" type="text" class="form-control" class="input-medium">
+                            <font color="red">{{apelido_input_error_message}}</font>
+                          </div>
+                        </div>
+                        <div class="control-group">
+                          <label class="control-label" for="id_turma">Turma:</label>
+                          <div class="controls">
+                            <input required="" name="turma_input" id="id_turma_input" type="text" class="form-control" class="input-medium">
+                            <font color="red">{{turma_input_error_message}}</font>
+                          </div>
+                        </div>
+                        </fieldset>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-success" id="id_submit_information">Submit</button>
+                        </div>
+                        {% csrf_token %}                            
+                    </form>
+
+
+{% endblock %}
