@@ -59,7 +59,7 @@ def view_group(request, group_alias):
 	found_groups = search_groups(group_alias)
 	if found_groups:
 		if request.method == 'POST':
-			id_ = request.COOKIES['LOGSESSID']
+			id_ = request.session['LOGSESSID']
 			user = User.objects.filter(id = id_)
 			if user:
 				user[0].groups.add(found_groups[0])
@@ -74,14 +74,19 @@ def verify_login(request):
 
 	access_token = request.POST['username_input']
 
-	if User.objects.filter(access_token = access_token):
+	user = User.objects.filter(access_token = access_token)
+
+	if user:
 		#Cookie username
 		response = redirect('home')
-		response.set_cookie('LOGSESSID', User.objects.filter(access_token = access_token)[0].id)
+		request.session['LOGSESSID'] = user[0].id
+		request.session['LOGSESSAPELIDO'] = user[0].apelido
+		request.session['access_token'] = access_token
+		response.set_cookie('LOGSESSGREET', user[0].apelido)	
 
 	else:
 		response = redirect('sign_up')
-		response.set_cookie('LOGSESSID', access_token)
+		request.session['access_token'] = access_token
 		
 	
 	
@@ -89,9 +94,10 @@ def verify_login(request):
 	return response
 
 
-def logout(self):
+def logout(request):
 	response = redirect ('home')
-	response.delete_cookie('LOGSESSID')
+	response.set_cookie('LOGSESSGREET', '')
+	request.session.flush()
 
 	return response
 
@@ -105,14 +111,16 @@ def signup(request):
 		turma = request.POST['turma_input']
 
 		#Getting the cookie
-		access_token = request.COOKIES['LOGSESSID']
+		access_token = request.session['access_token']
 
 		response = redirect('home')
-
+		#Nao precisa mais dessa verificação pois estamos usando session.
 		user = User.objects.filter(access_token = access_token)
 
 		if user:
-			response.set_cookie('LOGSESSID', user[0].id)
+			request.session['LOGSESSID'] = user[0].id
+			request.session['LOGSESSAPELIDO'] = user[0].apelido
+			request.session['access_token'] = access_token
 			return response
 
 		user = User()
@@ -123,7 +131,11 @@ def signup(request):
 
 		user = User.objects.filter(access_token = access_token)
 
-		response.set_cookie('LOGSESSID', user[0].id)
+		request.session['LOGSESSID'] = user[0].id
+		request.session['LOGSESSAPELIDO'] = user[0].apelido
+		request.session['access_token'] = access_token
+		response.set_cookie('LOGSESSGREET', user[0].apelido)	
+
 
 		return response
 
@@ -137,7 +149,8 @@ def view_user(request, id_):
 	return redirect('home')
 
 def self_user(request):
-	id_ = request.COOKIES['LOGSESSID']
+	id_ = request.session['LOGSESSID']
 	if User.objects.filter(id = id_):
-		return redirect ('/users/' + id_ + '/')
+
+		return redirect ('/users/' + str(id_) + '/')
 	return redirect('home')

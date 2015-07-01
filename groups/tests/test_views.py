@@ -335,12 +335,3 @@ class ViewUserTest(TestCase):
 	# 	self.fail(response.content.decode())
 	# 	self.assertContains(response, 'Bem vindo, User1')
 
-	def test_login_creates_cookie(self):
-		
-		response = self.client.post('/login', data = {'username_input': 'newUser'})
-
-		cookies = response.client.cookies.items()
-
-		self.assertEqual(len(cookies), 1)
-
-		self.assertTrue('LOGSESSID' in [k[0] for k in cookies])

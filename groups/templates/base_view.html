@@ -2,21 +2,23 @@
 {% block title %} Grupos ITA {% endblock %}
 {% block body %}
 
-<script type="text/javascript">
-        $(document).ready(function(){
-            if($.cookie('LOGSESSID') && $.cookie('LOGSESSID') != ""){
-                $('#id_greeting_text').html('Bem vindo, ' + $.cookie('LOGSESSID'));
-                $('#id_user_login').hide();
-            }
-            else {
-                $('#id_greeting_text').hide();
-                $('#id_user_login').show();
-                
-            }
-        }
-        );
+
+ <script type="text/javascript">
+          //MEXER AQUI PRA PEGAR A SESSION. O RESTO TA SHOW
+         $(document).ready(function(){
+             if($.cookie('LOGSESSGREET') && $.cookie('LOGSESSGREET') != ""){
+                 $('#id_greeting_text').html('Bem vindo, ' + $.cookie('LOGSESSGREET'));
+                 $('#id_user_login').hide();
+             }
+             else {
+                 $('#id_greeting_text').hide();
+                 $('#id_user_login').show();
+              
+             }
+         }
+         );
         
-</script>
+ </script>
 
 <nav class="navbar navbar-default" role="navigation">
   <div class="container-fluid">
