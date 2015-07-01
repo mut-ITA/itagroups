@@ -59,9 +59,10 @@ def view_group(request, group_alias):
 	found_groups = search_groups(group_alias)
 	if found_groups:
 		if request.method == 'POST':
-			username = request.COOKIES['LOGSESSID']
-			if User.objects.filter(access_token = username):
-				User.objects.filter(access_token = username)[0].groups.add(found_groups[0])
+			id_ = request.COOKIES['LOGSESSID']
+			user = User.objects.filter(id = id_)
+			if user:
+				user[0].groups.add(found_groups[0])
 		return render(request, 'view_group.html', {
 			'group_name': found_groups[0].name,
 			'users': found_groups[0].user_set.all()
@@ -71,13 +72,19 @@ def view_group(request, group_alias):
 
 def verify_login(request):
 
-	user = request.POST['username_input']
+	access_token = request.POST['username_input']
 
-	response = redirect('home') if User.objects.filter(access_token = user) else redirect('sign_up')
+	if User.objects.filter(access_token = access_token):
+		#Cookie username
+		response = redirect('home')
+		response.set_cookie('LOGSESSID', User.objects.filter(access_token = access_token)[0].id)
 
-	#Cookie username
-
-	response.set_cookie('LOGSESSID', user)
+	else:
+		response = redirect('sign_up')
+		response.set_cookie('LOGSESSID', access_token)
+		
+	
+	
 
 	return response
 
@@ -98,21 +105,39 @@ def signup(request):
 		turma = request.POST['turma_input']
 
 		#Getting the cookie
-		username = request.COOKIES['LOGSESSID']
+		access_token = request.COOKIES['LOGSESSID']
 
 		response = redirect('home')
 
-		if User.objects.filter(access_token = username):
-			response.set_cookie('LOGSESSID', username)
+		user = User.objects.filter(access_token = access_token)
 
+		if user:
+			response.set_cookie('LOGSESSID', user[0].id)
 			return response
 
 		user = User()
-		user.access_token = username
+		user.access_token = access_token
 		user.apelido = apelido
 		user.turma = turma
 		user.save()
 
+		user = User.objects.filter(access_token = access_token)
+
+		response.set_cookie('LOGSESSID', user[0].id)
+
 		return response
 
 	return render(request, 'signup.html')
+
+def view_user(request, id_):
+	if User.objects.filter(id = id_):
+		return render(request, 'view_user.html', {
+			'apelido': User.objects.filter(id = id_)[0].apelido
+			})
+	return redirect('home')
+
+def self_user(request):
+	id_ = request.COOKIES['LOGSESSID']
+	if User.objects.filter(id = id_):
+		return redirect ('/users/' + id_ + '/')
+	return redirect('home')

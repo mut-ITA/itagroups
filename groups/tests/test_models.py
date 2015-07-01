@@ -52,7 +52,7 @@ class UserModelTest(TestCase):
 
 	def test_get_absolute_url(self):
 		user = User.objects.create()
-		self.assertEqual(user.get_absolute_url(), '/user/%s/' % (user.id))
+		self.assertEqual(user.get_absolute_url(), '/users/%s/' % (user.id))
 
 
 class UserGroupRelationTest(TestCase):

@@ -5,7 +5,7 @@ from django.template.loader import render_to_string
 
 from unittest import skip
 
-from groups.views import home_page, view_group, verify_login, signup, logout
+from groups.views import home_page, view_group, verify_login, signup, logout, view_user
 from groups.models import Group, User
 from groups.HelperMethods.tests import create_sample_database, create_sample_user_database
 from groups.HelperMethods.functionalities import search_groups
@@ -56,7 +56,7 @@ class ViewGroupTests(TestCase):
 
 		saved_groups = Group.objects.all()
 
-		self.client.cookies['LOGSESSID'] = 'Username1'
+		self.client.cookies['LOGSESSID'] = Group.objects.all()[0].id
 
 		response = self.sample_group_view_POST_response(saved_groups[0].alias)
 
@@ -270,9 +270,7 @@ class UserAccountTest(TestCase):
 
 		self.assertRedirects(response, '/signup/')
 
-	def test_POST_save_user_to_db(self):
-		self.client.cookies['LOGSESSID'] = 'User1'
-
+	def test_POST_signup_save_user_to_db(self):
 		response = self.client.post('/signup/', data = {'apelido_input': 'newApelido', 'turma_input': 'newTurma'})
 
 		self.assertEqual(User.objects.count(), 1)
@@ -296,7 +294,7 @@ class UserAccountTest(TestCase):
 		self.assertEqual(response.content.decode(), expected_html)
 
 	def test_logout_removes_cookies(self):
-		self.client.cookies['LOGSESSID'] = 'Username1'
+		self.client.cookies['LOGSESSID'] = 0
 
 		response = self.client.get('/logout')
 		cookies = response.client.cookies.items()
@@ -307,6 +305,23 @@ class UserAccountTest(TestCase):
 		response = self.client.get('/logout')
 
 		self.assertEqual(response.status_code, 302)
+
+		self.assertRedirects(response, '/')
+
+class ViewUserTest(TestCase):	
+	def test_view_page_returns_correct_html(self):
+		create_sample_user_database()
+
+		request = HttpRequest()
+
+		saved_users = User.objects.all()
+		response = view_group(request, saved_users[0].id)
+
+		self.assertTemplateUsed('view_user.html')
+		self.assertIn(saved_users[0].apelido, response.content.decode())
+
+	def test_view_page_returns_to_home_wrong_alias(self):
+		response = self.client.get('/users/02020200222/')
 
 		self.assertRedirects(response, '/')
 
