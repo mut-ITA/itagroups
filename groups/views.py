@@ -14,10 +14,10 @@ def home_page(request):
 
 	# Home page get is searching for groups
 	if request.method == 'POST':
-		name = request.POST['name']
-		alias = request.POST['alias']
-		tags = request.POST['tags']
-		description = request.POST['description']
+		name = request.POST['group_name']
+		alias = request.POST['group_alias']
+		tags = request.POST['group_tags']
+		description = request.POST['group_description']
 
 
 		if verification(request, name, alias, tags, description):
@@ -34,11 +34,6 @@ def home_page(request):
 		except ValidationError:
 			error = "Nao pode-se adicionar um grupo vazio!"
 			return render(request, 'home.html', {'group_description_error_message': error})
-
-		if verification(request, name, alias, tags, description):
-		 	return verification(request, name, alias, tags, description)
-
-
 
 
 		#return render(request, 'home.html', {

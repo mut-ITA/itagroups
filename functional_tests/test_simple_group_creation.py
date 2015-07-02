@@ -12,13 +12,13 @@ class NewVisitorTest(FunctionalTest):
 		id_ = self.create_sample_user_db("Moller", "Moller", "T17")
 
 		username_input = self.browser.find_element_by_id('id_username_input')
-		username_input.send_keys("Moller")	
+		username_input.send_keys("Moller")
 
 		# Após preencher o username, ele clica no botão de login
 		sign_in_button = self.browser.find_element_by_id('id_sign_in_button')
 		self.assertEqual(
 			sign_in_button.get_attribute('type'),
-			'submit'			
+			'submit'
 			)
 		sign_in_button.click()
 
@@ -27,7 +27,7 @@ class NewVisitorTest(FunctionalTest):
 		header_text = self.browser.find_element_by_tag_name('h1').text
 		self.assertIn('ITA', header_text)
 
-		# Ele observa a pagina encontra o botao de criar um novo grupos		
+		# Ele observa a pagina encontra o botao de criar um novo grupos
 		# Ele pressiona o botao e surge um formulario para a criacao de grupo
 		# Ele observa o formulario e o preenche conforme o desejado:
 		# nome: Testadores do H8
@@ -41,7 +41,7 @@ class NewVisitorTest(FunctionalTest):
 									tags =  "TDD; test",
 									description = "Um grupo maneiro de aprender a testar")
 
-
+		self.browser.implicitly_wait(5)
 		# Agora ele deseja saber se o grupo foi criado corretamente
 		# Ele olha para o site e visualiza uma caixa de texto com um botao de pesquisa do lado
 
@@ -52,16 +52,16 @@ class NewVisitorTest(FunctionalTest):
 		search_input.send_keys("TDD")
 		search_button.click()
 
-		# A pagina atualiza, agora mostrando uma lista de grupos com apenas um elemento        
+		# A pagina atualiza, agora mostrando uma lista de grupos com apenas um elemento
 		# Tal elemento é o grupo criado recentemente por ele
 		table 	= self.browser.find_element_by_id('id_search_list')
 		rows = table.find_elements_by_tag_name('tr')
 		columns = []
 		for r in rows:
 			columns += r.find_elements_by_tag_name('td')
-		self.assertIn('Testadores no H8', [col.text for col in columns])
+		self.assertIn('h8testers', [col.text for col in columns])
 
-		# Ele observa a pagina e clica no link para ver mais detalhes sobre o grupo 
+		# Ele observa a pagina e clica no link para ver mais detalhes sobre o grupo
 
 		table 	= self.browser.find_element_by_id('id_search_list')
 		rows = table.find_elements_by_tag_name('tr')
@@ -72,15 +72,14 @@ class NewVisitorTest(FunctionalTest):
 		for col in columns:
 			if col.text == 'h8testers':
 				view_group_button = columns[columns.index(col) + 1]
-		
+
 		view_group_button.click()
 
 		self.assertIn(self.browser.current_url, self.server_url + '/groups/h8testers/')
 
 		# Apos ser redirecionado para a pagina do grupo
 		# ele observa que o titulo contem o nome do grupo e fica satisfeito
-		
+
 		self.assertIn('ITA', self.browser.title)
 		header_text = self.browser.find_element_by_tag_name('h1').text
 		self.assertIn('Testadores no H8', header_text)
-

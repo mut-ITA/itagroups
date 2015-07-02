@@ -38,7 +38,6 @@ def verification(request, name, alias, tags, description):
 				group_tags_error_message = 'Todas as tags devem possuir entre 3 e 12 caracteres'
 
 
-
 		if passed:
 			return False
 
@@ -55,7 +54,7 @@ def verification(request, name, alias, tags, description):
 					'group_description_value': description
 					})
 
-def search_groups(search_tags):	
+def search_groups(search_tags):
 	all_groups = Group.objects.all()
 	#Add priority
 	#for g in all_groups:

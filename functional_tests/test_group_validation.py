@@ -1,7 +1,10 @@
 from .base import FunctionalTest
 
+from unittest import skip
+
 class ValidationTest(FunctionalTest):
 
+	@skip
 	def test_wrong_user_input(self):
 		# Chico entra no site e tenta entrar com um grupo com tudo errado
 		self.browser.get(self.server_url)
@@ -9,13 +12,13 @@ class ValidationTest(FunctionalTest):
 		id_ = self.create_sample_user_db("Chico", "Chico", "T18")
 
 		username_input = self.browser.find_element_by_id('id_username_input')
-		username_input.send_keys("Chico")	
+		username_input.send_keys("Chico")
 
 		# Após preencher o username, ele clica no botão de login
 		sign_in_button = self.browser.find_element_by_id('id_sign_in_button')
 		self.assertEqual(
 			sign_in_button.get_attribute('type'),
-			'submit'			
+			'submit'
 			)
 		sign_in_button.click()
 

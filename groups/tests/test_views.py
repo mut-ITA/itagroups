@@ -138,13 +138,11 @@ class CreateGroupTest(TestCase):
 		self.assertEqual(new_group.description, 'New group description')
 
 
-	@skip
-	def test_create_empty_group_validation_error(self):
-	 	response = self.sample_group_POST_response(name = '', alias = '', tags = '', description = '')
-
-
-		self.assertIn(ERRORS.EMPTY_NAME, response.content.decode())
-	 	self.assertVerificationError(response, 'Nao pode-se adicionar um grupo vazio!')
+	# @skip
+	# def test_create_empty_group_validation_error(self):
+	#  	response = self.sample_group_POST_response(name = '', alias = '', tags = '', description = '')
+	# 	self.assertIn(ERRORS.EMPTY_NAME, response.content.decode())
+	#  	self.assertVerificationError(response, 'Nao pode-se adicionar um grupo vazio!')
 
 
 	def test_create_empty_group_doesnt_save_db(self):
@@ -353,13 +351,6 @@ class UserAccountTest(TestCase):
 		expected_html = render_to_string('signup.html')
 		self.assertEqual(response.content.decode(), expected_html)
 
-	def test_logout_removes_cookies(self):
-		self.client.cookies['LOGSESSID'] = 0
-
-		response = self.client.get('/logout')
-		cookies = response.client.cookies.items()
-
-		self.assertTrue("''" in s for s in [k[1] for k in cookies])
 
 	def test_logout_redirects_to_home(self):
 		response = self.client.get('/logout')
@@ -506,14 +497,3 @@ class UserExitGroupTest(TestCase):
 	@skip
 	def test_user_greeting_message_home_page(self):
 	 	pass
-
-
-	def test_login_creates_cookie(self):
-
-		response = self.client.post('/login', data = {'username_input': 'newUser'})
-
-		cookies = response.client.cookies.items()
-
-		self.assertEqual(len(cookies), 1)
-
-		self.assertTrue('LOGSESSID' in [k[0] for k in cookies])
