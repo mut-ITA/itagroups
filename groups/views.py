@@ -22,7 +22,7 @@ def home_page(request):
 						alias = alias,
 						tags = tags,
 						description = description)
-		
+
 		try:
 			group.full_clean()
 			group.save()
@@ -30,13 +30,15 @@ def home_page(request):
 			error = "Nao pode-se adicionar um grupo vazio!"
 			return render(request, 'home.html', {'group_description_error_message': error})
 
-		if verification(request, name, alias, tags, description):			
+		if verification(request, name, alias, tags, description):
 		 	return verification(request, name, alias, tags, description)
 
 		
+
+
 		#return render(request, 'home.html', {
 		# 	'group_success': True,
-		# 	'open_popup': True, 
+		# 	'open_popup': True,
 		# 	'group_name': group.name,
 		# 	'group_tags': group.tags,
 		# 	'group_alias': group.alias,
@@ -54,7 +56,7 @@ def home_page(request):
 
 	return render(request, 'home.html')
 
-	
+
 def view_group(request, group_alias):
 	found_groups = search_groups(group_alias)
 	if found_groups:
@@ -90,7 +92,7 @@ def logout(self):
 
 
 def signup(request):
-	
+
 	if request.method == 'POST':
 
 		# Writing less

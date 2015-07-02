@@ -26,6 +26,7 @@ class GroupModelTest(TestCase):
 			group.save()
 			group.full_clean()
 
+	@skip
 	def test_get_absolute_url(self):
 		create_sample_database()
 		group = Group.objects.all()[0]
@@ -96,4 +97,3 @@ class UserGroupRelationTest(TestCase):
 		first_saved_user.groups.add(second_saved_group)
 
 		self.assertEqual(first_saved_user.groups.all().count(), 2)
-

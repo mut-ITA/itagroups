@@ -9,8 +9,33 @@ from groups.views import home_page, view_group, verify_login, signup, logout
 from groups.models import Group, User
 from groups.HelperMethods.tests import create_sample_database, create_sample_user_database
 from groups.HelperMethods.functionalities import search_groups
+from groups.forms import GroupForm, ERRORS
 
 # Create your tests here.
+
+class ItemFormTest(TestCase):
+
+	def test_form_item_input_has_placeholder_and_css_classes(self):
+		form = GroupForm()
+		self.assertIn('placeholder="Entre o nome do grupo"', form.as_p())
+		self.assertIn('class="form-control input-medium"', form.as_p())
+
+	def test_form_validation_for_blank_items(self):
+		form = GroupForm(data={'name': '', 'alias': '', 'tags': '', 'description': ''})
+		self.assertFalse(form.is_valid())
+		self.assertEqual(
+			form.errors['name'],
+			[ERRORS.EMPTY_NAME]
+		)
+		self.assertEqual(
+			form.errors['alias'],
+			[ERRORS.EMPTY_ALIAS]
+		)
+		self.assertEqual(
+			form.errors['tags'],
+			[ERRORS	.EMPTY_TAGS]
+		)
+
 
 class HomePageTest(TestCase):
 
@@ -33,7 +58,7 @@ class ViewGroupTests(TestCase):
 			})
 
 		return response
-	
+
 	def test_view_page_returns_correct_html(self):
 		create_sample_database()
 
@@ -65,13 +90,13 @@ class ViewGroupTests(TestCase):
 		self.assertEqual(saved_groups[0].user_set.all()[0].access_token, "Username1")
 
 
-		
+
 
 class CreateGroupTest(TestCase):
 
-	def sample_group_POST_response(self, name = 'New group name', 
+	def sample_group_POST_response(self, name = 'New group name',
 										 alias = 'newgroupalias',
-										 tags = 'new; group; tags', 
+										 tags = 'new; group; tags',
 										 description = 'New group description'):
 		response = self.client.post(
 			'/', data={	'group_name':  name,
@@ -111,7 +136,7 @@ class CreateGroupTest(TestCase):
 
 	@skip
 	def test_create_group_correct_name(self):
-		#Only restriction: characters => 3 < 27 
+		#Only restriction: characters => 3 < 27
 
 		response = self.sample_group_POST_response(name = 'Newgroupnamewith28characters')
 		self.assertVerificationError(response, 'O nome do grupo deve possuir entre 3 e 27 caracteres')
@@ -141,12 +166,12 @@ class CreateGroupTest(TestCase):
 		response = self.sample_group_POST_response(alias = '12345678910111213test')
 		self.assertVerificationError(response, 'Minusculo, sem simbolos, sem espaço')
 		self.assertEqual(Group.objects.count(), 0)
-	
+
 
 	@skip
 	def test_create_group_correct_tag(self):
 		#Restriction: each tag => 3 < 12, no equal tags
-		
+
 		response = self.sample_group_POST_response(tags = 'da; tags; like; a; newbie')
 		self.assertVerificationError(response, 'Todas as tags devem possuir entre 3 e 12 caracteres')
 		self.assertEqual(Group.objects.count(), 0)
@@ -179,12 +204,12 @@ class SearchTests(TestCase):
 		first_group.name = 'Teh empty tag'
 		first_group.alias = 'tehalias'
 		first_group.tags = ''
-		first_group.description = 'Teh empty description' 
+		first_group.description = 'Teh empty description'
 		first_group.save()
 
 		request = HttpRequest()
 		request.method = 'GET'
-		response = home_page(request)	
+		response = home_page(request)
 
 		self.assertNotIn('Teh empty tag', response.content.decode())
 
@@ -321,7 +346,7 @@ class UserAccountTest(TestCase):
 	# 	self.assertContains(response, 'Bem vindo, User1')
 
 	def test_login_creates_cookie(self):
-		
+
 		response = self.client.post('/login', data = {'username_input': 'newUser'})
 
 		cookies = response.client.cookies.items()
