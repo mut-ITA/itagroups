@@ -111,12 +111,12 @@ def signup(request):
 		access_token = request.session['access_token']
 
 		response = redirect('home')
-		#Nao precisa mais dessa verificação pois estamos usando session.
-		user = User.objects.filter(access_token = access_token)
+		## Nao precisa mais dessa verificação pois estamos usando session.
+		# user = User.objects.filter(access_token = access_token)
 
-		if user:
-			create_session(request, user[0].id, user[0].apelido, access_token)
-			return response
+		# if user:
+		# 	create_session(request, user[0].id, user[0].apelido, access_token)
+		# 	return response
 
 		user = User()
 		user.access_token = access_token

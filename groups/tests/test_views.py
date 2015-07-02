@@ -3,12 +3,15 @@ from django.test import TestCase
 from django.http import HttpRequest
 from django.template.loader import render_to_string
 
+from django.conf import settings
+from django.utils.importlib import import_module
+
 from unittest import skip
 
-from groups.views import home_page, view_group, verify_login, signup, logout, view_user
+from groups.views import home_page, view_group, verify_login, signup, logout, view_user, self_user
 from groups.models import Group, User
 from groups.HelperMethods.tests import create_sample_database, create_sample_user_database
-from groups.HelperMethods.functionalities import search_groups
+from groups.HelperMethods.functionalities import search_groups, create_session
 
 # Create your tests here.
 
@@ -273,6 +276,13 @@ class UserAccountTest(TestCase):
 		found = resolve('/logout')
 		self.assertEqual(found.func, logout)
 
+	def test_GET_in_login_redirects_home(self):
+		response = self.client.get('/login')
+
+		self.assertEqual(response.status_code, 302)
+
+		self.assertRedirects(response, '/')
+
 	def test_POST_new_user_redirects_signup(self):
 		response = self.client.post('/login', data = {'username_input': 'newUser'})
 
@@ -297,6 +307,10 @@ class UserAccountTest(TestCase):
 
 		response = self.client.post('/login', data = {'username_input': 'oldUser'})
 
+		session = self.client.session
+
+		self.assertEqual(session['access_token'], 'oldUser')
+		
 		self.assertEqual(response.status_code, 302)
 
 		self.assertRedirects(response, '/')
@@ -325,7 +339,7 @@ class UserAccountTest(TestCase):
 class ViewUserTest(TestCase):	
 	def test_view_user_page_returns_correct_html(self):
 		create_sample_user_database()
-		
+
 		saved_users = User.objects.all()
 		response = self.client.get('/users/%s/' %saved_users[0].id)
 
@@ -336,6 +350,43 @@ class ViewUserTest(TestCase):
 		response = self.client.get('/users/02020200222/')
 
 		self.assertRedirects(response, '/')
+
+	def test_view_user_self_page_redirect_correct_page(self):
+		create_sample_user_database()
+		user = User.objects.all()
+
+		session = self.client.session
+		session['id']	= user[0].id
+		session['apelido'] = user[0].apelido
+		session['access_token'] = user[0].access_token
+		session.save()
+
+		response = self.client.get('/users/me')
+
+		self.assertEqual(response.status_code, 302)
+		self.assertRedirects(response, '/users/'+ str(user[0].id) +'/')
+
+	def test_view_user_self_page_wrong_id_redirect_home_page(self):
+		create_sample_user_database()
+		user = User.objects.all()
+
+		session = self.client.session
+		session['id']	= 1321321
+		session['apelido'] = user[0].apelido
+		session['access_token'] = user[0].access_token
+		session.save()
+
+		response = self.client.get('/users/me')
+
+		self.assertEqual(response.status_code, 302)
+		self.assertRedirects(response, '/')
+
+
+
+
+
+# class UserExitGroupTest(TestCase):
+# 	def
 
 
 
