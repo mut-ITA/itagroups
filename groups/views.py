@@ -4,48 +4,13 @@ from django.http import Http404, HttpResponse
 from django.contrib.auth.views import logout
 
 from groups.models import Group, User
-
+from groups.forms import GroupForm
 from groups.HelperMethods.functionalities import verification, search_groups
 
 
 
 def home_page(request):
-
 	# Home page get is searching for groups
-	if request.method == 'POST':
-		name = request.POST['group_name']
-		alias = request.POST['group_alias']
-		tags = request.POST['group_tags']
-		description = request.POST['group_description']
-
-		group = Group(	name = name,
-						alias = alias,
-						tags = tags,
-						description = description)
-
-		try:
-			group.full_clean()
-			group.save()
-		except ValidationError:
-			error = "Nao pode-se adicionar um grupo vazio!"
-			return render(request, 'home.html', {'group_description_error_message': error})
-
-		if verification(request, name, alias, tags, description):
-		 	return verification(request, name, alias, tags, description)
-
-		
-
-
-		#return render(request, 'home.html', {
-		# 	'group_success': True,
-		# 	'open_popup': True,
-		# 	'group_name': group.name,
-		# 	'group_tags': group.tags,
-		# 	'group_alias': group.alias,
-		# 	'group_description': group.description
-		# 	})
-		return redirect('home')
-
 	if request.method == 'GET':
 		search_tags = request.GET.get('search_group', '')
 		if search_tags != '':
@@ -54,7 +19,7 @@ def home_page(request):
 				'groups': found_groups
 				})
 
-	return render(request, 'home.html')
+	return render(request, 'home.html', {'form': GroupForm()})
 
 
 def view_group(request, group_alias):

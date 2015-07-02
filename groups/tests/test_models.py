@@ -1,6 +1,8 @@
 from django.test import TestCase
 from django.core.exceptions import ValidationError
 
+from unittest import skip
+
 from groups.models import Group, User
 from groups.HelperMethods.tests import create_sample_database, create_sample_user_database
 
@@ -26,7 +28,6 @@ class GroupModelTest(TestCase):
 			group.save()
 			group.full_clean()
 
-	@skip
 	def test_get_absolute_url(self):
 		create_sample_database()
 		group = Group.objects.all()[0]
@@ -51,6 +52,7 @@ class UserModelTest(TestCase):
 			user.save()
 			user.full_clean()
 
+	@skip
 	def test_get_absolute_url(self):
 		user = User.objects.create()
 		self.assertEqual(user.get_absolute_url(), '/user/%s/' % (user.id))

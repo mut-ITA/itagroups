@@ -39,16 +39,13 @@ class ItemFormTest(TestCase):
 
 class HomePageTest(TestCase):
 
-	def test_root_url_resolves_to_home_page_view(self):
-		found = resolve('/')
-		self.assertEqual(found.func, home_page)
+	def test_home_page_renders_home_template(self):
+		response = self.client.get('/')
+		self.assertTemplateUsed(response, 'home.html')
 
-	def test_home_page_returns_correct_html(self):
-		request = HttpRequest()
-		response = home_page(request)
-		expected_html = render_to_string('home.html')
-		self.assertEqual(response.content.decode(), expected_html)
-
+	def test_home_page_uses_group_form(self):
+		response = self.client.get('/')
+		self.assertIsInstance(response.context['form'], GroupForm)
 
 class ViewGroupTests(TestCase):
 
@@ -127,7 +124,7 @@ class CreateGroupTest(TestCase):
 	def test_create_empty_group_validation_error(self):
 		response = self.sample_group_POST_response(name = '', alias = '', tags = '', description = '')
 
-		self.assertVerificationError(response, 'Nao pode-se adicionar um grupo vazio!')
+		self.assertIn(ERRORS.EMPTY_NAME, response.content.decode())
 
 	def test_create_empty_group_doesnt_save_db(self):
 		response = self.sample_group_POST_response(name = '', alias = '', tags = '', description = '')
