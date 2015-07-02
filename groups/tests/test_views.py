@@ -5,11 +5,12 @@ from django.template.loader import render_to_string
 
 from unittest import skip
 
-from groups.views import home_page, view_group, verify_login, signup, logout
+from groups.views import home_page, view_group, verify_login, signup, logout, view_user, self_user
 from groups.models import Group, User
 from groups.HelperMethods.tests import create_sample_database, create_sample_user_database
 from groups.HelperMethods.functionalities import search_groups
 from groups.forms import GroupForm, ERRORS
+from groups.HelperMethods.functionalities import search_groups, create_session
 
 # Create your tests here.
 
@@ -72,21 +73,29 @@ class ViewGroupTests(TestCase):
 
 		self.assertRedirects(response, '/')
 
+class JoinGroupTest(TestCase):
+
+	def sample_group_view_POST_response(self, alias, id_):
+		session = self.client.session
+		session['id'] = id_
+		session.save()
+		response = self.client.post(
+			'/groups/'+ alias + '/', data={'access_token': 'Username1'
+			})
+
+		return response
+
 	def test_POST_user_join_group_db(self):
 		create_sample_database()
 		create_sample_user_database()
 
 		saved_groups = Group.objects.all()
 
-		self.client.cookies['LOGSESSID'] = 'Username1'
-
-		response = self.sample_group_view_POST_response(saved_groups[0].alias)
+		response = self.sample_group_view_POST_response(saved_groups[0].alias, Group.objects.all()[0].id)
 
 		self.assertEqual(saved_groups[0].user_set.all().count(), 1)
 
 		self.assertEqual(saved_groups[0].user_set.all()[0].access_token, "Username1")
-
-
 
 
 class CreateGroupTest(TestCase):
@@ -95,6 +104,11 @@ class CreateGroupTest(TestCase):
 										 alias = 'newgroupalias',
 										 tags = 'new; group; tags',
 										 description = 'New group description'):
+		session = self.client.session
+		session['id'] = '2'
+		session['apelido'] = 'TestApelido'
+		session['access_token'] = 'TestUser'
+		session.save()
 		response = self.client.post(
 			'/', data={	'group_name':  name,
 						'group_alias': alias,
@@ -104,11 +118,14 @@ class CreateGroupTest(TestCase):
 
 		return response
 
-	def test_create_group_form_redirects_after_POST(self):
-		response = self.sample_group_POST_response()
+	def test_redirects_login_page_if_without_login(self):
+		pass
 
-		self.assertEqual(response.status_code, 302)
-		self.assertRedirects(response, '/')
+	# def test_create_group_form_redirects_after_POST(self):
+	# 	response = self.sample_group_POST_response()
+
+	# 	self.assertEqual(response.status_code, 302)
+	# 	self.assertRedirects(response, '/')
 
 	def test_create_group_POST_save_to_db(self):
 		response = self.sample_group_POST_response()
@@ -121,17 +138,20 @@ class CreateGroupTest(TestCase):
 		self.assertEqual(new_group.description, 'New group description')
 
 
+	@skip
 	def test_create_empty_group_validation_error(self):
-		response = self.sample_group_POST_response(name = '', alias = '', tags = '', description = '')
+	 	response = self.sample_group_POST_response(name = '', alias = '', tags = '', description = '')
+
 
 		self.assertIn(ERRORS.EMPTY_NAME, response.content.decode())
+	 	self.assertVerificationError(response, 'Nao pode-se adicionar um grupo vazio!')
+
 
 	def test_create_empty_group_doesnt_save_db(self):
 		response = self.sample_group_POST_response(name = '', alias = '', tags = '', description = '')
 
 		self.assertEqual(Group.objects.count(), 0)
 
-	@skip
 	def test_create_group_correct_name(self):
 		#Only restriction: characters => 3 < 27
 
@@ -144,28 +164,30 @@ class CreateGroupTest(TestCase):
 		self.assertEqual(Group.objects.count(), 0)
 
 
-	@skip
 	def test_create_group_correct_alias(self):
 		#Restrictions: No upper case allowed, no symbols, no spaces, <20 characters
+		create_sample_database()
+
+		response = self.sample_group_POST_response(alias = 'tehalias')
+		self.assertEqual(Group.objects.count(), 2)
 
 		response = self.sample_group_POST_response(alias = 'UPPERCASETEST')
 		self.assertVerificationError(response, 'Minusculo, sem simbolos, sem espaço')
-		self.assertEqual(Group.objects.count(), 0)
+		self.assertEqual(Group.objects.count(), 2)
 
 		response = self.sample_group_POST_response(alias = 'space test')
 		self.assertVerificationError(response, 'Minusculo, sem simbolos, sem espaço')
-		self.assertEqual(Group.objects.count(), 0)
+		self.assertEqual(Group.objects.count(), 2)
 
 		response = self.sample_group_POST_response(alias = 'alphanumeric/test/')
 		self.assertVerificationError(response, 'Minusculo, sem simbolos, sem espaço')
-		self.assertEqual(Group.objects.count(), 0)
+		self.assertEqual(Group.objects.count(), 2)
 
 		response = self.sample_group_POST_response(alias = '12345678910111213test')
 		self.assertVerificationError(response, 'Minusculo, sem simbolos, sem espaço')
-		self.assertEqual(Group.objects.count(), 0)
+		self.assertEqual(Group.objects.count(), 2)
 
 
-	@skip
 	def test_create_group_correct_tag(self):
 		#Restriction: each tag => 3 < 12, no equal tags
 
@@ -181,6 +203,7 @@ class CreateGroupTest(TestCase):
 		self.assertEqual(response.status_code, 200)
 		self.assertTemplateUsed(response, 'home.html')
 		self.assertContains(response, expected_error)
+
 
 
 class SearchTests(TestCase):
@@ -285,6 +308,13 @@ class UserAccountTest(TestCase):
 		found = resolve('/logout')
 		self.assertEqual(found.func, logout)
 
+	def test_GET_in_login_redirects_home(self):
+		response = self.client.get('/login')
+
+		self.assertEqual(response.status_code, 302)
+
+		self.assertRedirects(response, '/')
+
 	def test_POST_new_user_redirects_signup(self):
 		response = self.client.post('/login', data = {'username_input': 'newUser'})
 
@@ -292,8 +322,10 @@ class UserAccountTest(TestCase):
 
 		self.assertRedirects(response, '/signup/')
 
-	def test_POST_save_user_to_db(self):
-		self.client.cookies['LOGSESSID'] = 'User1'
+	def test_POST_signup_save_user_to_db(self):
+		session = self.client.session
+		session['access_token'] = 'User1'
+		session.save()
 
 		response = self.client.post('/signup/', data = {'apelido_input': 'newApelido', 'turma_input': 'newTurma'})
 
@@ -307,6 +339,10 @@ class UserAccountTest(TestCase):
 
 		response = self.client.post('/login', data = {'username_input': 'oldUser'})
 
+		session = self.client.session
+
+		self.assertEqual(session['access_token'], 'oldUser')
+
 		self.assertEqual(response.status_code, 302)
 
 		self.assertRedirects(response, '/')
@@ -318,7 +354,7 @@ class UserAccountTest(TestCase):
 		self.assertEqual(response.content.decode(), expected_html)
 
 	def test_logout_removes_cookies(self):
-		self.client.cookies['LOGSESSID'] = 'Username1'
+		self.client.cookies['LOGSESSID'] = 0
 
 		response = self.client.get('/logout')
 		cookies = response.client.cookies.items()
@@ -332,15 +368,145 @@ class UserAccountTest(TestCase):
 
 		self.assertRedirects(response, '/')
 
+class ViewUserTest(TestCase):
+	def test_view_user_page_returns_correct_html(self):
+		create_sample_user_database()
+
+		saved_users = User.objects.all()
+		response = self.client.get('/users/%s/' %saved_users[0].id)
+
+		self.assertTemplateUsed('view_user.html')
+		self.assertIn(saved_users[0].apelido, response.content.decode())
+
+	def test_view_page_returns_to_home_wrong_alias(self):
+		response = self.client.get('/users/02020200222/')
+
+		self.assertRedirects(response, '/')
+
+	def test_view_user_self_page_redirect_correct_page(self):
+		create_sample_user_database()
+		user = User.objects.all()
+
+		session = self.client.session
+		session['id']	= user[0].id
+		session['apelido'] = user[0].apelido
+		session['access_token'] = user[0].access_token
+		session.save()
+
+		response = self.client.get('/users/me')
+
+		self.assertEqual(response.status_code, 302)
+		self.assertRedirects(response, '/users/'+ str(user[0].id) +'/')
+
+	def test_view_user_self_page_wrong_id_redirect_home_page(self):
+		create_sample_user_database()
+		user = User.objects.all()
+
+		session = self.client.session
+		session['id']	= 1321321
+		session['apelido'] = user[0].apelido
+		session['access_token'] = user[0].access_token
+		session.save()
+
+		response = self.client.get('/users/me')
+
+		self.assertEqual(response.status_code, 302)
+		self.assertRedirects(response, '/')
 
 
-	# def test_user_greeting_message_home_page(self):
-	# 	self.client.cookies['LOGSESSID'] = 'User1'
 
-	# 	response = self.client.get('/')
 
-	# 	self.fail(response.content.decode())
-	# 	self.assertContains(response, 'Bem vindo, User1')
+
+class UserExitGroupTest(TestCase):
+	def test_leave_group_redirects_to_group_page(self):
+		create_sample_database()
+		create_sample_user_database()
+		saved_groups = Group.objects.all()
+		saved_users = User.objects.all()
+		sample_user = saved_users[0]
+		sample_group = saved_groups[0]
+		sample_user.groups.add(sample_group)
+
+		session = self.client.session
+		session['id']	= sample_user.id
+		session['apelido'] = sample_user.apelido
+		session['access_token'] = sample_user.access_token
+		session.save()
+
+		response = self.client.post('/groups/'+ sample_group.alias + '/leave')
+		self.assertEqual(response.status_code, 302)
+		self.assertRedirects(response, '/groups/' + sample_group.alias + '/')
+
+	def test_leave_group_removes_user_from_group_on_db(self):
+		create_sample_database()
+		create_sample_user_database()
+		saved_groups = Group.objects.all()
+		saved_users = User.objects.all()
+		sample_user = saved_users[0]
+		sample_group = saved_groups[0]
+		sample_user.groups.add(sample_group)
+
+		self.assertEqual(len(sample_user.groups.all()), 1)
+
+		session = self.client.session
+		session['id']	= sample_user.id
+		session['apelido'] = sample_user.apelido
+		session['access_token'] = sample_user.access_token
+		session.save()
+
+		response = self.client.post('/groups/' + sample_group.alias + '/leave')
+
+		self.assertEqual(len(sample_user.groups.all()), 0)
+
+	def test_leave_group_from_user_redirects_to_user_page(self):
+		create_sample_database()
+		create_sample_user_database()
+		saved_groups = Group.objects.all()
+		saved_users = User.objects.all()
+		sample_user = saved_users[0]
+		sample_group = saved_groups[0]
+		sample_user.groups.add(sample_group)
+
+		session = self.client.session
+		session['id']	= sample_user.id
+		session['apelido'] = sample_user.apelido
+		session['access_token'] = sample_user.access_token
+		session.save()
+
+		response = self.client.get('/groups/'+ sample_group.alias + '/leave')
+		self.assertEqual(response.status_code, 302)
+		self.assertRedirects(response, '/users/' + str(sample_user.id) + '/')
+
+	def test_leave_group_without_session_from_user_redirects_to_home(self):
+		create_sample_database()
+		create_sample_user_database()
+		saved_groups = Group.objects.all()
+		saved_users = User.objects.all()
+		sample_user = saved_users[0]
+		sample_group = saved_groups[0]
+		sample_user.groups.add(sample_group)
+
+		response = self.client.get('/groups/'+ sample_group.alias + '/leave')
+		self.assertEqual(response.status_code, 302)
+		self.assertRedirects(response, '/')
+
+	def test_leave_group_without_session_from_groups_redirects_to_home(self):
+		create_sample_database()
+		create_sample_user_database()
+		saved_groups = Group.objects.all()
+		saved_users = User.objects.all()
+		sample_user = saved_users[0]
+		sample_group = saved_groups[0]
+		sample_user.groups.add(sample_group)
+
+		response = self.client.post('/groups/'+ sample_group.alias + '/leave')
+		self.assertEqual(response.status_code, 302)
+		self.assertRedirects(response, '/')
+
+	@skip
+	def test_user_greeting_message_home_page(self):
+	 	pass
+
 
 	def test_login_creates_cookie(self):
 

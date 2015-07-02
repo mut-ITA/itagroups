@@ -81,3 +81,5 @@ class FunctionalTest(StaticLiveServerTestCase):
 		sample_user.apelido = apelido
 		sample_user.turma = turma
 		sample_user.save()
+
+		return sample_user.id

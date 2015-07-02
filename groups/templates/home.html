@@ -21,8 +21,9 @@
 </form>
 {% endblock %}
 
-{% block view_main_button %}
 
+{% block view_main_button %}
+{% if request.session.id %}
 <div class="row">
     <div class="col-md-6 col-md-offset-3">
         <div class = "text-center">
@@ -38,7 +39,7 @@
         </div>
     </div>
 </div>
-
+{% endif %}
 {% endblock %}
 
 {% block view_main_table %}
@@ -69,7 +70,7 @@
                 <td> {{ group.name }} </td>
                 <td id="table_alias"> {{ group.alias }}</td>
                 <td> {{ group.description }}</td>
-                <td> <a href="/groups/{{ group.alias }}/"> <button type="submit" id="table_view_button">View Group</button></a></td>
+                <td> <a href="/groups/{{ group.alias }}/"> <button type="submit" id="table_view_button">Ver</button></a></td>
             </tr>
             {% endfor %}
         </table>
@@ -103,11 +104,75 @@
                     {% if group_success %}
                         <div>{{ group_name }} criado com sucesso!          </div>
                         <div class="modal-footer">
-                            <a href="/"><button type="button" class="btn btn-success" data-dismiss="modal">  </a>Close</button>
+                            <a href={% url 'home' %}><button type="submit" class="btn btn-success">  Close</button></a>
                         </div>
                     {% else %}
                     <form method="POST" action={% url 'home' %} class="form-horizontal">
-                        {{ form }}
+                        <fieldset>
+                        <!-- Sign In Form -->
+                        <!-- Text input-->
+                        <div class="control-group">
+                          <label class="control-label" for="id_group_name">Nome:</label>
+                          <div class="controls">
+                            <input  required=""
+                                    name="group_name"
+                                    id="id_group_name"
+                                    type="text"
+                                    class="form-control"
+                                    class="input-medium"
+                                    value="{{ group_name_value }}">
+                            {% if group_name_error_message %}
+                                    <span class="help-block" style="color:red">{{ group_name_error_message }}</span>
+                            {% endif %}
+                          </div>
+                        </div>
+                        <div class="control-group">
+                          <label class="control-label" for="id_group_alias">Alias:</label>
+                          <div class="controls">
+                            <input  required=""
+                                    name="group_alias"
+                                    id="id_group_alias"
+                                    type="text"
+                                    class="form-control"
+                                    placeholder="itagroups_alias@googlegroups.com"
+                                    class="input-medium"
+                                    value="{{ group_alias_value }}">
+                            {% if group_alias_error_message %}
+                                    <span class="help-block" style="color:red">{{ group_alias_error_message }}</span>
+                            {% endif %}
+                          </div>
+                        </div>
+                        <div class="control-group">
+                          <label class="control-label" for="id_group_tags">Tags:</label>
+                          <div class="controls">
+                            <input  required=""
+                                    name="group_tags"
+                                    id="id_group_tags"
+                                    type="text"
+                                    class="form-control"
+                                    placeholder="Tags; separadas; por; ponto-e-virgula;"
+                                    class="input-medium"
+                                    value="{{ group_tags_value }}">
+                            {% if group_tags_error_message %}
+                                    <span class="help-block" style="color:red">{{ group_tags_error_message }}</span>
+                            {% endif %}
+                          </div>
+                        </div>
+                        <div class="control-group">
+                          <label class="control-label" for="id_group_description">Descricao:</label>
+                          <div class="controls">
+                            <textarea   required=""
+                                        name="group_description"
+                                        id="id_group_description"
+                                        class="form-control"
+                                        class="input-medium"
+                                        rows="3"></textarea>
+                            {% if group_description_error_message %}
+                                    <span class="help-block" style="color:red">{{ group_description_error_message }}</span>
+                            {% endif %}
+                          </div>
+                        </div>
+                        </fieldset>
                         <div class="modal-footer">
                             <button type="submit" class="btn btn-success" id="id_create_new_group">Submit</button>
                         </div>

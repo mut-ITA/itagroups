@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 from groups.models import Group, User
 
@@ -22,12 +22,9 @@ def verification(request, name, alias, tags, description):
 
 		#Alias originality
 		for g in Group.objects.all():
-			if alias is g.alias:
+			if alias == g.alias:
 				passed = False
 				group_alias_error_message = 'Já existe um grupo com esse alias'
-			if name is g.name:
-				passed = False
-				group_name_error_message = 'Já existe um grupo com esse nome'
 
 		#Tag verification
 		for tag in tags.strip().split(';'):
@@ -43,7 +40,7 @@ def verification(request, name, alias, tags, description):
 
 
 		if passed:
-			return None
+			return False
 
 		return render(request, 'home.html', {
 					'group_success': False,
@@ -85,3 +82,15 @@ def search_groups(search_tags):
 				break
 
 	return found_groups
+
+def create_session(request, id_, apelido, access_token):
+	request.session['id'] = id_
+	request.session['apelido'] = apelido
+	request.session['access_token'] = access_token
+
+def safe_get_session_id(request):
+	if 'id' in request.session:
+		id_ = request.session['id']
+		return id_
+	else:
+		return False

@@ -5,11 +5,11 @@ from selenium.webdriver.common.keys import Keys
 
 class JoinGroupTest(FunctionalTest):
 
-	def test_can_join_group(self):
+	def test_can_join_and_leave_group(self):
 
 		# Philip loga na sua conta no site
 		## Como ele já possui conta, adicionamos ele diretamente ao banco de dados para o teste.
-		self.create_sample_user_db("Philip", "Âncora", "T17")
+		id_ = self.create_sample_user_db("Philip", "Ancora", "T17")
 		self.create_sample_group_db("Carniceria", "bateria", "barulho", "Muito barulho")
 
 		self.browser.get(self.server_url)
@@ -52,28 +52,61 @@ class JoinGroupTest(FunctionalTest):
 		# Ele nota que seu nota foi adicionado na lista de membros
 
 		members_table = self.browser.find_element_by_id('id_members_list')
-		rows = table.find_elements_by_tag_name('tr')
+		rows = members_table.find_elements_by_tag_name('tr')
 		columns = []
 		for r in rows:
 			columns += r.find_elements_by_tag_name('td')
 
 		self.assertIn('Philip', [col.text for col in columns])
-		self.assertIn('Âncora', [col.text for col in columns])
+		self.assertIn('Ancora', [col.text for col in columns])
 		self.assertIn('T17', [col.text for col in columns])
 
 		# Ele entra na sua página de usuário e verifica que Carniceria está presente nos seus grupos
 
-		my_groups_button = self.browser.find_element_by_id('id_my_groups_button')
-		my_groups_button.click()
-
-		self.assertIn(self.browser.current_url, self.server_url + '/users/me'),
+		self.browser.get(self.server_url + '/users/'+ str(id_) + '/')
 
 		groups_table = self.browser.find_element_by_id('id_groups_list')
-		rows = table.find_elements_by_tag_name('tr')
+		rows = groups_table.find_elements_by_tag_name('tr')
 		columns = []
 		for r in rows:
 			columns += r.find_elements_by_tag_name('td')
 
 		self.assertIn('Carniceria', [col.text for col in columns])
+
+		# Porém, Philip resolveu se converter e deixar de ser cearense. Decidiu, de uma vez por todas,
+		# sair do grupo da Carniceria
+
+		self.browser.get(self.server_url + '/groups/bateria/')
+
+		# Ele entrar na página deste belo grupo e clica em Sair
+
+		leave_group_button = self.browser.find_element_by_id('id_leave_group')
+		leave_group_button.click()
+
+		# Ele verifica se seu nome não se encontra mais na lista de membros
+
+		members_table = self.browser.find_element_by_id('id_members_list')
+		rows = members_table.find_elements_by_tag_name('tr')
+		columns = []
+		for r in rows:
+			columns += r.find_elements_by_tag_name('td')
+
+		self.assertNotIn('Philip', [col.text for col in columns])
+		self.assertNotIn('Ancora', [col.text for col in columns])
+		self.assertNotIn('T17', [col.text for col in columns])
+
+		# Satisfeito com sua transformação, ele verifica na sua página de usuário que ele não pertence
+		# mais à este antro de ceará
+
+		self.browser.get(self.server_url + '/users/'+ str(id_) + '/')
+
+		groups_table = self.browser.find_element_by_id('id_groups_list')
+		rows = groups_table.find_elements_by_tag_name('tr')
+		columns = []
+		for r in rows:
+			columns += r.find_elements_by_tag_name('td')
+
+		self.assertNotIn('Carniceria', [col.text for col in columns])
+
 
 		

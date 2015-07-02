@@ -4,7 +4,7 @@ from django.core.urlresolvers import reverse
 # Create your models here.
 class Group(models.Model):
 	name = models.TextField(default = '')
-	alias = models.TextField(default = '')
+	alias = models.TextField(default = '', unique = True)
 	tags = models.TextField(default = '')
 	description = models.TextField(default = '')
 

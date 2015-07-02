@@ -49,4 +49,4 @@ class LoginTests (FunctionalTest):
 		
 		greeting_text = self.browser.find_element_by_id('id_greeting_text')
 
-		self.assertIn('Bem vindo, Moller', greeting_text.text)
+		self.assertIn('Bem vindo, Padabixo', greeting_text.text)

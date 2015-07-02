@@ -6,6 +6,7 @@ from django.contrib.auth.views import logout
 from groups.models import Group, User
 from groups.forms import GroupForm
 from groups.HelperMethods.functionalities import verification, search_groups
+from groups.HelperMethods.functionalities import verification, search_groups, create_session, safe_get_session_id
 
 
 
@@ -17,6 +18,10 @@ def home_page(request):
 		alias = request.POST['alias']
 		tags = request.POST['tags']
 		description = request.POST['description']
+
+
+		if verification(request, name, alias, tags, description):
+			return verification(request, name, alias, tags, description)
 
 		group = Group(	name = name,
 						alias = alias,
@@ -44,7 +49,11 @@ def home_page(request):
 		# 	'group_alias': group.alias,
 		# 	'group_description': group.description
 		# 	})
-		return redirect('home')
+		return render(request, 'home.html', {
+				'group_success': True,
+				'open_popup': True,
+				'group_name': name
+				})
 
 	if request.method == 'GET':
 		search_tags = request.GET.get('search_group', '')
@@ -60,33 +69,43 @@ def home_page(request):
 def view_group(request, group_alias):
 	found_groups = search_groups(group_alias)
 	if found_groups:
+		group = found_groups[0]
 		if request.method == 'POST':
-			username = request.COOKIES['LOGSESSID']
-			if User.objects.filter(access_token = username):
-				User.objects.filter(access_token = username)[0].groups.add(found_groups[0])
+			id_ = request.session['id']
+			user = User.objects.filter(id = id_)
+			if user:
+				user[0].groups.add(group)
 		return render(request, 'view_group.html', {
-			'group_name': found_groups[0].name,
-			'users': found_groups[0].user_set.all()
+			'group': group,
+			'users': group.user_set.all(),
+			'user_ids': [u.id for u in group.user_set.all()]
 			})
 	return redirect('home')
 
 
 def verify_login(request):
+	if request.method == 'POST':
+		access_token = request.POST['username_input']
 
-	user = request.POST['username_input']
+		user = User.objects.filter(access_token = access_token)
 
-	response = redirect('home') if User.objects.filter(access_token = user) else redirect('sign_up')
+		if user:
+			#Session username
+			response = redirect('home')
+			create_session(request, user[0].id, user[0].apelido, access_token)
 
-	#Cookie username
+		else:
+			response = redirect('sign_up')
+			request.session['access_token'] = access_token
 
-	response.set_cookie('LOGSESSID', user)
+		return response
 
-	return response
+	return redirect('home')
 
 
-def logout(self):
+def logout(request):
 	response = redirect ('home')
-	response.delete_cookie('LOGSESSID')
+	request.session.flush()
 
 	return response
 
@@ -100,21 +119,66 @@ def signup(request):
 		turma = request.POST['turma_input']
 
 		#Getting the cookie
-		username = request.COOKIES['LOGSESSID']
+		access_token = request.session['access_token']
 
 		response = redirect('home')
+		## Nao precisa mais dessa verificação pois estamos usando session.
+		# user = User.objects.filter(access_token = access_token)
 
-		if User.objects.filter(access_token = username):
-			response.set_cookie('LOGSESSID', username)
-
-			return response
+		# if user:
+		# 	create_session(request, user[0].id, user[0].apelido, access_token)
+		# 	return response
 
 		user = User()
-		user.access_token = username
+		user.access_token = access_token
 		user.apelido = apelido
 		user.turma = turma
 		user.save()
 
+		user = User.objects.filter(access_token = access_token)
+
+		create_session(request, user[0].id, user[0].apelido, access_token)
+
 		return response
 
 	return render(request, 'signup.html')
+
+def view_user(request, id_):
+	if User.objects.filter(id = id_):
+		return render(request, 'view_user.html', {
+			'apelido': User.objects.filter(id = id_)[0].apelido,
+			'groups': User.objects.filter(id = id_)[0].groups.all()
+			})
+	return redirect('home')
+
+def self_user(request):
+	id_ = safe_get_session_id(request)
+	if id_:
+		if User.objects.filter(id = id_):
+			return redirect ('/users/' + str(id_) + '/')
+	return redirect('home')
+
+def leave_group(request, group_alias):
+	if request.method == 'POST':
+		id_ = safe_get_session_id(request)
+		if id_:
+			found_groups = search_groups(group_alias)
+			if found_groups:
+				group = found_groups[0]
+				user = User.objects.filter(id = id_)
+				if user:
+					user[0].groups.remove(group)
+					return redirect('/groups/' + group_alias + '/')
+		return redirect('home')
+
+	if request.method == 'GET':
+		id_ = safe_get_session_id(request)
+		if id_:
+			found_groups = search_groups(group_alias)
+			if found_groups:
+				group = found_groups[0]
+				user = User.objects.filter(id = id_)
+				if user:
+					user[0].groups.remove(group)
+					return redirect('/users/' + str(id_) + '/')
+		return redirect('home')
