@@ -5,7 +5,7 @@ from django.contrib.auth.views import logout
 
 from groups.models import Group, User
 
-from groups.HelperMethods.functionalities import verification, search_groups
+from groups.HelperMethods.functionalities import verification, search_groups, create_session
 
 
 
@@ -58,45 +58,42 @@ def home_page(request):
 def view_group(request, group_alias):
 	found_groups = search_groups(group_alias)
 	if found_groups:
+		group = found_groups[0]
 		if request.method == 'POST':
-			id_ = request.session['LOGSESSID']
+			id_ = request.session['id']
 			user = User.objects.filter(id = id_)
 			if user:
-				user[0].groups.add(found_groups[0])
+				user[0].groups.add(group)
 		return render(request, 'view_group.html', {
-			'group_name': found_groups[0].name,
-			'users': found_groups[0].user_set.all()
+			'group': group,
+			'users': group.user_set.all(),
+			'user_ids': [u.id for u in group.user_set.all()]
 			})
 	return redirect('home')
 
 
 def verify_login(request):
+	if request.method == 'POST':
+		access_token = request.POST['username_input']
 
-	access_token = request.POST['username_input']
+		user = User.objects.filter(access_token = access_token)
 
-	user = User.objects.filter(access_token = access_token)
+		if user:
+			#Session username
+			response = redirect('home')
+			create_session(request, user[0].id, user[0].apelido, access_token)
 
-	if user:
-		#Cookie username
-		response = redirect('home')
-		request.session['LOGSESSID'] = user[0].id
-		request.session['LOGSESSAPELIDO'] = user[0].apelido
-		request.session['access_token'] = access_token
-		response.set_cookie('LOGSESSGREET', user[0].apelido)	
-
-	else:
-		response = redirect('sign_up')
-		request.session['access_token'] = access_token
+		else:
+			response = redirect('sign_up')
+			request.session['access_token'] = access_token
 		
-	
-	
+		return response	
 
-	return response
+	return redirect('home')
 
 
 def logout(request):
 	response = redirect ('home')
-	response.set_cookie('LOGSESSGREET', '')
 	request.session.flush()
 
 	return response
@@ -118,9 +115,7 @@ def signup(request):
 		user = User.objects.filter(access_token = access_token)
 
 		if user:
-			request.session['LOGSESSID'] = user[0].id
-			request.session['LOGSESSAPELIDO'] = user[0].apelido
-			request.session['access_token'] = access_token
+			create_session(request, user[0].id, user[0].apelido, access_token)
 			return response
 
 		user = User()
@@ -131,11 +126,7 @@ def signup(request):
 
 		user = User.objects.filter(access_token = access_token)
 
-		request.session['LOGSESSID'] = user[0].id
-		request.session['LOGSESSAPELIDO'] = user[0].apelido
-		request.session['access_token'] = access_token
-		response.set_cookie('LOGSESSGREET', user[0].apelido)	
-
+		create_session(request, user[0].id, user[0].apelido, access_token)
 
 		return response
 
@@ -144,12 +135,13 @@ def signup(request):
 def view_user(request, id_):
 	if User.objects.filter(id = id_):
 		return render(request, 'view_user.html', {
-			'apelido': User.objects.filter(id = id_)[0].apelido
+			'apelido': User.objects.filter(id = id_)[0].apelido,
+			'groups': User.objects.filter(id = id_)[0].groups.all()
 			})
 	return redirect('home')
 
 def self_user(request):
-	id_ = request.session['LOGSESSID']
+	id_ = request.session['id']
 	if User.objects.filter(id = id_):
 
 		return redirect ('/users/' + str(id_) + '/')

@@ -26,16 +26,6 @@ class HomePageTest(TestCase):
 
 
 class ViewGroupTests(TestCase):
-
-	def sample_group_view_POST_response(self, alias, id_):
-		session = self.client.session
-		session['LOGSESSID'] = id_
-		session.save()
-		response = self.client.post(
-			'/groups/'+ alias + '/', data={'access_token': 'Username1'
-			})
-
-		return response
 	
 	def test_view_page_returns_correct_html(self):
 		create_sample_database()
@@ -53,6 +43,18 @@ class ViewGroupTests(TestCase):
 
 		self.assertRedirects(response, '/')
 
+class JoinGroupTest(TestCase):
+
+	def sample_group_view_POST_response(self, alias, id_):
+		session = self.client.session
+		session['id'] = id_
+		session.save()
+		response = self.client.post(
+			'/groups/'+ alias + '/', data={'access_token': 'Username1'
+			})
+
+		return response
+
 	def test_POST_user_join_group_db(self):
 		create_sample_database()
 		create_sample_user_database()
@@ -66,14 +68,17 @@ class ViewGroupTests(TestCase):
 		self.assertEqual(saved_groups[0].user_set.all()[0].access_token, "Username1")
 
 
-		
-
 class CreateGroupTest(TestCase):
 
 	def sample_group_POST_response(self, name = 'New group name', 
 										 alias = 'newgroupalias',
 										 tags = 'new; group; tags', 
 										 description = 'New group description'):
+		session = self.client.session
+		session['id'] = '2'
+		session['apelido'] = 'TestApelido'
+		session['access_token'] = 'TestUser'
+		session.save()
 		response = self.client.post(
 			'/', data={	'group_name':  name,
 						'group_alias': alias,
@@ -82,6 +87,9 @@ class CreateGroupTest(TestCase):
 			})
 
 		return response
+
+	def test_redirects_login_page_if_without_login(self):
+		pass
 
 	def test_create_group_form_redirects_after_POST(self):
 		response = self.sample_group_POST_response()
@@ -160,6 +168,7 @@ class CreateGroupTest(TestCase):
 		self.assertEqual(response.status_code, 200)
 		self.assertTemplateUsed(response, 'home.html')
 		self.assertContains(response, expected_error)
+
 
 
 class SearchTests(TestCase):
@@ -275,7 +284,7 @@ class UserAccountTest(TestCase):
 		session = self.client.session
 		session['access_token'] = 'User1'
 		session.save()
-		
+
 		response = self.client.post('/signup/', data = {'apelido_input': 'newApelido', 'turma_input': 'newTurma'})
 
 		self.assertEqual(User.objects.count(), 1)
@@ -314,13 +323,11 @@ class UserAccountTest(TestCase):
 		self.assertRedirects(response, '/')
 
 class ViewUserTest(TestCase):	
-	def test_view_page_returns_correct_html(self):
+	def test_view_user_page_returns_correct_html(self):
 		create_sample_user_database()
-
-		request = HttpRequest()
-
+		
 		saved_users = User.objects.all()
-		response = view_group(request, saved_users[0].id)
+		response = self.client.get('/users/%s/' %saved_users[0].id)
 
 		self.assertTemplateUsed('view_user.html')
 		self.assertIn(saved_users[0].apelido, response.content.decode())

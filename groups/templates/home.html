@@ -22,7 +22,7 @@
 {% endblock %}
 
 {% block view_main_button %} 
-
+{% if request.session.id %}
 <div class="row">
     <div class="col-md-6 col-md-offset-3">
         <div class = "text-center">
@@ -38,7 +38,7 @@
         </div>
     </div>
 </div>
-
+{% endif %}
 {% endblock %}
 
 {% block view_main_table %} 
@@ -61,7 +61,7 @@
                 <td> {{ group.name }} </td>
                 <td id="table_alias"> {{ group.alias }}</td>
                 <td> {{ group.description }}</td>
-                <td> <a href="/groups/{{ group.alias }}/"> <button type="submit" id="table_view_button">View Group</button></a></td>
+                <td> <a href="/groups/{{ group.alias }}/"> <button type="submit" id="table_view_button">Ver</button></a></td>
             </tr>
             {% endfor %}
         </table>

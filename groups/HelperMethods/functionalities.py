@@ -85,3 +85,8 @@ def search_groups(search_tags):
 				break
 
 	return found_groups
+
+def create_session(request, id_, apelido, access_token):
+	request.session['id'] = id_
+	request.session['apelido'] = apelido
+	request.session['access_token'] = access_token

@@ -2,3 +2,31 @@
 
 {% block view_title %} {{ apelido }} {% endblock %}
 
+{% block view_main_table %} 
+
+<div class="row">
+    <div class="col-md-6 col-md-offset-3">
+        <table id="id_groups_list" class="table">
+            {% if groups %}
+            <tr>
+                <td> # </td>
+                <td> Name </td>
+                <td> Alias</td>
+                <td> Description </td>
+                <td></td>
+            </tr>
+            {% endif %}
+            {% for group in groups %}
+            <tr>
+                <td> {{ forloop.counter }} </td>
+                <td> {{ group.name }} </td>
+                <td id="table_alias"> {{ group.alias }}</td>
+                <td> {{ group.description }}</td>
+                <td> <a href="/groups/{{ group.alias }}/"> <button type="submit" id="table_view_button">Ver</button></a></td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+
+{% endblock %}

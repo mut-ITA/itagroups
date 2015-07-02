@@ -2,24 +2,6 @@
 {% block title %} Grupos ITA {% endblock %}
 {% block body %}
 
-
- <script type="text/javascript">
-          //MEXER AQUI PRA PEGAR A SESSION. O RESTO TA SHOW
-         $(document).ready(function(){
-             if($.cookie('LOGSESSGREET') && $.cookie('LOGSESSGREET') != ""){
-                 $('#id_greeting_text').html('Bem vindo, ' + $.cookie('LOGSESSGREET'));
-                 $('#id_user_login').hide();
-             }
-             else {
-                 $('#id_greeting_text').hide();
-                 $('#id_user_login').show();
-              
-             }
-         }
-         );
-        
- </script>
-
 <nav class="navbar navbar-default" role="navigation">
   <div class="container-fluid">
     <!-- Brand and toggle get grouped for better mobile display -->
@@ -38,25 +20,30 @@
         <li class="active"><a href={% url 'home' %}><i class="glyphicon glyphicon-home"></i> Home</a></li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        <li class="dropdown">
-         <div class= "nav navbar-nav" id = 'id_user_login'>
-                <form class = "form-inline" method="POST" action={% url 'verify_login' %}>
-                        <div class = "input-group">
-                            <input class = "input-lg" required="" name="username_input" id="id_username_input" type="text" placeholder="Username">
-                            <div class="input-group-btn">
-                                <button type="submit" class="btn btn-danger btn-lg" id="id_sign_in_button">Log me in!</button>
-                        </div>
-                        {% csrf_token %}   
-                    </form>
-                </div>
-            </div>
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" id = "id_greeting_text"><span class="caret">
-          </span></a>
-          <ul class="dropdown-menu" role="menu">
-            <li><a href={% url "self_user" %}><i class="glyphicon glyphicon-user"></i> Meus Grupos</a></li>
-            <li class="divider"></li>
-            <li><a href={% url "logout" %}><i class="glyphicon glyphicon-off"></i> Sair</a></li>
-          </ul>
+      	<li class="dropdown">
+      		{% if request.session.apelido %}
+      		<a href="#" class="dropdown-toggle" data-toggle="dropdown" id = "id_greeting_text">Bem vindo, {{ request.session.apelido }}<span class="caret">
+      		</span></a>
+      		<ul class="dropdown-menu" role="menu">
+      			<li><a href={% url "self_user" %} id="id_my_groups_button"><i class="glyphicon glyphicon-user"></i> Meus Grupos</a></li>
+      			<li class="divider"></li>
+      			<li><a href={% url "logout" %}><i class="glyphicon glyphicon-off"></i> Sair</a></li>
+      		</ul>
+      		{% else %}
+      		<div class= "nav navbar-nav" id = 'id_user_login'>
+      			<form class = "form-inline" method="POST" action={% url 'verify_login' %}>
+      				<div class = "input-group">
+      					<input class = "input-lg" required="" name="username_input" id="id_username_input" type="text" placeholder="Username">
+      					<div class="input-group-btn">
+      						<button type="submit" class="btn btn-danger btn-lg" id="id_sign_in_button">Log me in!</button>
+      					</div>
+      					{% csrf_token %}   
+      				</form>
+      			</div>
+      		</div>
+      		{% endif %}
+
+          
         </li>
       </ul>
     </div>
@@ -71,6 +58,7 @@
             <div class="col-md-6 col-md-offset-3 jumbotron">
                 <div class = "text-center">
                     <h1> {% block view_title %} {% endblock %} </h1>
+                    {% block view_description %} {% endblock %}
                     <br>
                     {% block view_search %} {% endblock %}
                     <br>
