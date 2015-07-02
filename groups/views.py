@@ -143,6 +143,17 @@ def view_user(request, id_):
 def self_user(request):
 	id_ = request.session['id']
 	if User.objects.filter(id = id_):
-
 		return redirect ('/users/' + str(id_) + '/')
+	return redirect('home')
+
+def leave_group(request, group_alias):
+	if request.method == 'POST':
+		id_ = request.session['id']
+		found_groups = search_groups(group_alias)
+		if found_groups:
+			group = found_groups[0]
+			user = User.objects.filter(id = id_)
+			if user:
+				user[0].groups.remove(group)
+				return redirect('/groups/' + group_alias + '/')
 	return redirect('home')
