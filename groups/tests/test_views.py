@@ -27,7 +27,10 @@ class HomePageTest(TestCase):
 
 class ViewGroupTests(TestCase):
 
-	def sample_group_view_POST_response(self, alias):
+	def sample_group_view_POST_response(self, alias, id_):
+		session = self.client.session
+		session['LOGSESSID'] = id_
+		session.save()
 		response = self.client.post(
 			'/groups/'+ alias + '/', data={'access_token': 'Username1'
 			})
@@ -56,9 +59,7 @@ class ViewGroupTests(TestCase):
 
 		saved_groups = Group.objects.all()
 
-		self.client.cookies['LOGSESSID'] = Group.objects.all()[0].id
-
-		response = self.sample_group_view_POST_response(saved_groups[0].alias)
+		response = self.sample_group_view_POST_response(saved_groups[0].alias, Group.objects.all()[0].id)
 
 		self.assertEqual(saved_groups[0].user_set.all().count(), 1)
 
@@ -271,6 +272,10 @@ class UserAccountTest(TestCase):
 		self.assertRedirects(response, '/signup/')
 
 	def test_POST_signup_save_user_to_db(self):
+		session = self.client.session
+		session['access_token'] = 'User1'
+		session.save()
+		
 		response = self.client.post('/signup/', data = {'apelido_input': 'newApelido', 'turma_input': 'newTurma'})
 
 		self.assertEqual(User.objects.count(), 1)
