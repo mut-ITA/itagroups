@@ -91,11 +91,11 @@ class CreateGroupTest(TestCase):
 	def test_redirects_login_page_if_without_login(self):
 		pass
 
-	def test_create_group_form_redirects_after_POST(self):
-		response = self.sample_group_POST_response()
+	# def test_create_group_form_redirects_after_POST(self):
+	# 	response = self.sample_group_POST_response()
 
-		self.assertEqual(response.status_code, 302)
-		self.assertRedirects(response, '/')
+	# 	self.assertEqual(response.status_code, 302)
+	# 	self.assertRedirects(response, '/')
 
 	def test_create_group_POST_save_to_db(self):
 		response = self.sample_group_POST_response()
@@ -108,17 +108,16 @@ class CreateGroupTest(TestCase):
 		self.assertEqual(new_group.description, 'New group description')
 
 
-	def test_create_empty_group_validation_error(self):
-		response = self.sample_group_POST_response(name = '', alias = '', tags = '', description = '')
+	# def test_create_empty_group_validation_error(self):
+	# 	response = self.sample_group_POST_response(name = '', alias = '', tags = '', description = '')
 
-		self.assertVerificationError(response, 'Nao pode-se adicionar um grupo vazio!')
+	# 	self.assertVerificationError(response, 'Nao pode-se adicionar um grupo vazio!')
 
 	def test_create_empty_group_doesnt_save_db(self):
 		response = self.sample_group_POST_response(name = '', alias = '', tags = '', description = '')
 
 		self.assertEqual(Group.objects.count(), 0)
 
-	@skip
 	def test_create_group_correct_name(self):
 		#Only restriction: characters => 3 < 27 
 
@@ -131,28 +130,30 @@ class CreateGroupTest(TestCase):
 		self.assertEqual(Group.objects.count(), 0)
 
 
-	@skip
 	def test_create_group_correct_alias(self):
 		#Restrictions: No upper case allowed, no symbols, no spaces, <20 characters
+		create_sample_database()
+
+		response = self.sample_group_POST_response(alias = 'tehalias')
+		self.assertEqual(Group.objects.count(), 2)
 
 		response = self.sample_group_POST_response(alias = 'UPPERCASETEST')
 		self.assertVerificationError(response, 'Minusculo, sem simbolos, sem espaço')
-		self.assertEqual(Group.objects.count(), 0)
+		self.assertEqual(Group.objects.count(), 2)
 
 		response = self.sample_group_POST_response(alias = 'space test')
 		self.assertVerificationError(response, 'Minusculo, sem simbolos, sem espaço')
-		self.assertEqual(Group.objects.count(), 0)
+		self.assertEqual(Group.objects.count(), 2)
 
 		response = self.sample_group_POST_response(alias = 'alphanumeric/test/')
 		self.assertVerificationError(response, 'Minusculo, sem simbolos, sem espaço')
-		self.assertEqual(Group.objects.count(), 0)
+		self.assertEqual(Group.objects.count(), 2)
 
 		response = self.sample_group_POST_response(alias = '12345678910111213test')
 		self.assertVerificationError(response, 'Minusculo, sem simbolos, sem espaço')
-		self.assertEqual(Group.objects.count(), 0)
+		self.assertEqual(Group.objects.count(), 2)
 	
 
-	@skip
 	def test_create_group_correct_tag(self):
 		#Restriction: each tag => 3 < 12, no equal tags
 		
@@ -385,12 +386,22 @@ class ViewUserTest(TestCase):
 class UserExitGroupTest(TestCase):
 	def test_leave_group_redirects_to_group_page(self):
 		create_sample_database()
+		create_sample_user_database()
 		saved_groups = Group.objects.all()
-		sample_group_alias = saved_groups[0].alias
+		saved_users = User.objects.all()
+		sample_user = saved_users[0]
+		sample_group = saved_groups[0]
+		sample_user.groups.add(sample_group)
 
-		response = self.client.get('/groups/'+ sample_group_alias + '/leave')
+		session = self.client.session
+		session['id']	= sample_user.id
+		session['apelido'] = sample_user.apelido
+		session['access_token'] = sample_user.access_token
+		session.save()
+
+		response = self.client.post('/groups/'+ sample_group.alias + '/leave')
 		self.assertEqual(response.status_code, 302)
-		self.assertRedirects(response, '/groups/' + sample_group_alias + '/')
+		self.assertRedirects(response, '/groups/' + sample_group.alias + '/')
 
 	def test_leave_group_removes_user_from_group_on_db(self):
 		create_sample_database()
@@ -413,6 +424,50 @@ class UserExitGroupTest(TestCase):
 
 		self.assertEqual(len(sample_user.groups.all()), 0)
 
+	def test_leave_group_from_user_redirects_to_user_page(self):
+		create_sample_database()
+		create_sample_user_database()
+		saved_groups = Group.objects.all()
+		saved_users = User.objects.all()
+		sample_user = saved_users[0]
+		sample_group = saved_groups[0]
+		sample_user.groups.add(sample_group)
+
+		session = self.client.session
+		session['id']	= sample_user.id
+		session['apelido'] = sample_user.apelido
+		session['access_token'] = sample_user.access_token
+		session.save()
+
+		response = self.client.get('/groups/'+ sample_group.alias + '/leave')
+		self.assertEqual(response.status_code, 302)
+		self.assertRedirects(response, '/users/' + str(sample_user.id) + '/')
+
+	def test_leave_group_without_session_from_user_redirects_to_home(self):
+		create_sample_database()
+		create_sample_user_database()
+		saved_groups = Group.objects.all()
+		saved_users = User.objects.all()
+		sample_user = saved_users[0]
+		sample_group = saved_groups[0]
+		sample_user.groups.add(sample_group)
+
+		response = self.client.get('/groups/'+ sample_group.alias + '/leave')
+		self.assertEqual(response.status_code, 302)
+		self.assertRedirects(response, '/')
+
+	def test_leave_group_without_session_from_groups_redirects_to_home(self):
+		create_sample_database()
+		create_sample_user_database()
+		saved_groups = Group.objects.all()
+		saved_users = User.objects.all()
+		sample_user = saved_users[0]
+		sample_group = saved_groups[0]
+		sample_user.groups.add(sample_group)
+
+		response = self.client.post('/groups/'+ sample_group.alias + '/leave')
+		self.assertEqual(response.status_code, 302)
+		self.assertRedirects(response, '/')
 
 
 

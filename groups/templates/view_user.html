@@ -14,6 +14,7 @@
                 <td> Alias</td>
                 <td> Description </td>
                 <td></td>
+                <td></td>
             </tr>
             {% endif %}
             {% for group in groups %}
@@ -23,6 +24,7 @@
                 <td id="table_alias"> {{ group.alias }}</td>
                 <td> {{ group.description }}</td>
                 <td> <a href="/groups/{{ group.alias }}/"> <button type="submit" id="table_view_button">Ver</button></a></td>
+                <td> <a href="/groups/{{ group.alias }}/leave"> <button type="submit" id="table_view_button">Sair</button></a></td>
             </tr>
             {% endfor %}
         </table>

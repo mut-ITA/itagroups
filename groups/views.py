@@ -5,7 +5,7 @@ from django.contrib.auth.views import logout
 
 from groups.models import Group, User
 
-from groups.HelperMethods.functionalities import verification, search_groups, create_session
+from groups.HelperMethods.functionalities import verification, search_groups, create_session, safe_get_session_id
 
 
 
@@ -18,21 +18,20 @@ def home_page(request):
 		tags = request.POST['group_tags']
 		description = request.POST['group_description']
 
+
+		if verification(request, name, alias, tags, description):			
+			return verification(request, name, alias, tags, description)
+
 		group = Group(	name = name,
-						alias = alias,
-						tags = tags,
-						description = description)
-		
+				alias = alias,
+				tags = tags,
+				description = description)
 		try:
 			group.full_clean()
 			group.save()
 		except ValidationError:
 			error = "Nao pode-se adicionar um grupo vazio!"
 			return render(request, 'home.html', {'group_description_error_message': error})
-
-		if verification(request, name, alias, tags, description):			
-		 	return verification(request, name, alias, tags, description)
-
 		
 		#return render(request, 'home.html', {
 		# 	'group_success': True,
@@ -42,7 +41,11 @@ def home_page(request):
 		# 	'group_alias': group.alias,
 		# 	'group_description': group.description
 		# 	})
-		return redirect('home')
+		return render(request, 'home.html', {
+				'group_success': True,
+				'open_popup': True,
+				'group_name': name
+				})
 
 	if request.method == 'GET':
 		search_tags = request.GET.get('search_group', '')
@@ -141,19 +144,33 @@ def view_user(request, id_):
 	return redirect('home')
 
 def self_user(request):
-	id_ = request.session['id']
-	if User.objects.filter(id = id_):
-		return redirect ('/users/' + str(id_) + '/')
+	id_ = safe_get_session_id(request)
+	if id_:
+		if User.objects.filter(id = id_):
+			return redirect ('/users/' + str(id_) + '/')
 	return redirect('home')
 
 def leave_group(request, group_alias):
 	if request.method == 'POST':
-		id_ = request.session['id']
-		found_groups = search_groups(group_alias)
-		if found_groups:
-			group = found_groups[0]
-			user = User.objects.filter(id = id_)
-			if user:
-				user[0].groups.remove(group)
-				return redirect('/groups/' + group_alias + '/')
-	return redirect('home')
+		id_ = safe_get_session_id(request)
+		if id_:
+			found_groups = search_groups(group_alias)
+			if found_groups:
+				group = found_groups[0]
+				user = User.objects.filter(id = id_)
+				if user:
+					user[0].groups.remove(group)
+					return redirect('/groups/' + group_alias + '/')
+		return redirect('home')
+
+	if request.method == 'GET':
+		id_ = safe_get_session_id(request)
+		if id_:
+			found_groups = search_groups(group_alias)
+			if found_groups:
+				group = found_groups[0]
+				user = User.objects.filter(id = id_)
+				if user:
+					user[0].groups.remove(group)
+					return redirect('/users/' + str(id_) + '/')
+		return redirect('home')

@@ -95,7 +95,7 @@
                     {% if group_success %}
                         <div>{{ group_name }} criado com sucesso!          </div>
                         <div class="modal-footer">
-                            <a href="/"><button type="button" class="btn btn-success" data-dismiss="modal">  </a>Close</button>
+                            <a href={% url 'home' %}><button type="submit" class="btn btn-success">  Close</button></a>
                         </div>
                     {% else %}    
                     <form method="POST" action={% url 'home' %} class="form-horizontal">
@@ -111,11 +111,9 @@
                                     type="text" 
                                     class="form-control" 
                                     class="input-medium"
-                                    value={{ group_name_value }}>
+                                    value="{{ group_name_value }}">
                             {% if group_name_error_message %}
-                                <div class="form-group has-error">
-                                    <span class="help-block">{{ group_name_error_message }}</span>
-                                </div>
+                                    <span class="help-block" style="color:red">{{ group_name_error_message }}</span>
                             {% endif %}
                           </div>
                         </div>
@@ -129,11 +127,9 @@
                                     class="form-control" 
                                     placeholder="itagroups_alias@googlegroups.com" 
                                     class="input-medium" 
-                                    value={{ group_alias_value }}>
+                                    value="{{ group_alias_value }}">
                             {% if group_alias_error_message %}
-                                <div class="form-group has-error">
-                                    <span class="help-block">{{ group_alias_error_message }}</span>
-                                </div>
+                                    <span class="help-block" style="color:red">{{ group_alias_error_message }}</span>
                             {% endif %}
                           </div>
                         </div>
@@ -147,11 +143,9 @@
                                     class="form-control" 
                                     placeholder="Tags; separadas; por; ponto-e-virgula;" 
                                     class="input-medium"
-                                    value={{ group_tags_value }}>
+                                    value="{{ group_tags_value }}">
                             {% if group_tags_error_message %}
-                                <div class="form-group has-error">
-                                    <span class="help-block">{{ group_tags_error_message }}</span>
-                                </div>
+                                    <span class="help-block" style="color:red">{{ group_tags_error_message }}</span>
                             {% endif %}
                           </div>
                         </div>
@@ -163,11 +157,9 @@
                                         id="id_group_description" 
                                         class="form-control" 
                                         class="input-medium" 
-                                        rows="3">{{ group_description_value }}</textarea>
+                                        rows="3"></textarea>
                             {% if group_description_error_message %}
-                                <div class="form-group has-error">
-                                    <span class="help-block">{{ group_description_error_message }}</span>
-                                </div>
+                                    <span class="help-block" style="color:red">{{ group_description_error_message }}</span>
                             {% endif %}
                           </div>
                         </div>
