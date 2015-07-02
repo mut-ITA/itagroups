@@ -10,7 +10,42 @@ from groups.HelperMethods.functionalities import verification, search_groups
 
 
 def home_page(request):
+
 	# Home page get is searching for groups
+	if request.method == 'POST':
+		name = request.POST['name']
+		alias = request.POST['alias']
+		tags = request.POST['tags']
+		description = request.POST['description']
+
+		group = Group(	name = name,
+						alias = alias,
+						tags = tags,
+						description = description)
+
+		try:
+			group.full_clean()
+			group.save()
+		except ValidationError:
+			error = "Nao pode-se adicionar um grupo vazio!"
+			return render(request, 'home.html', {'group_description_error_message': error})
+
+		if verification(request, name, alias, tags, description):
+		 	return verification(request, name, alias, tags, description)
+
+
+
+
+		#return render(request, 'home.html', {
+		# 	'group_success': True,
+		# 	'open_popup': True,
+		# 	'group_name': group.name,
+		# 	'group_tags': group.tags,
+		# 	'group_alias': group.alias,
+		# 	'group_description': group.description
+		# 	})
+		return redirect('home')
+
 	if request.method == 'GET':
 		search_tags = request.GET.get('search_group', '')
 		if search_tags != '':

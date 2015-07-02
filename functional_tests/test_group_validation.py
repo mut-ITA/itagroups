@@ -1,16 +1,16 @@
 from .base import FunctionalTest
 
-class ValidationTest(FunctionalTest):	
-	
+class ValidationTest(FunctionalTest):
+
 	def test_wrong_user_input(self):
 		# Chico entra no site e tenta entrar com um grupo com tudo errado
 		self.browser.get(self.server_url)
 
 
-		# Ele observa a pagina encontra o botao de criar um novo grupos		
+		# Ele observa a pagina encontra o botao de criar um novo grupos
 		# Ele pressiona o botao e surge um formulario para a criacao de grupo
 		# Ele observa o formulario e o preenche conforme o desejado:
-		## Nome > 27 caracteres		
+		## Nome > 27 caracteres
 		# nome: Pessoas mais chatas entre todo mundo do universo todo
 		## Alias nao alfanumerico
 		# alias: nao entendo ingles
@@ -37,10 +37,10 @@ class ValidationTest(FunctionalTest):
 			if e_id:
 				self.assertEqual(e.text, error_text[e_id])
 
-		self.assertEqual(self.browser.find_element_by_id('id_group_name').get_attribute('value'), "Pessoas")
-		self.assertEqual(self.browser.find_element_by_id('id_group_alias').get_attribute('value'), "nao")
-		self.assertEqual(self.browser.find_element_by_id('id_group_tags').get_attribute('value'), "b;")
-		self.assertEqual(self.browser.find_element_by_id('id_group_description').text, "Nao sei")
+		self.assertEqual(slefget_group_name_input_box().get_attribute('value'), "Pessoas")
+		self.assertEqual(self.get_group_alias_input_box().get_attribute('value'), "nao")
+		self.assertEqual(self.get_group_tags_input_box().get_attribute('value'), "b;")
+		self.assertEqual(self.get_group_description_input_box().text, "Nao sei")
 
 		#Chico atualiza a pagina e tenta novamente , arrumando e modificando as tags:
 		self.browser.get(self.server_url)
@@ -54,10 +54,10 @@ class ValidationTest(FunctionalTest):
 		error_message = "Não podem haver tags iguais"
 		self.assertEqual(error.text, error_message)
 
-		self.assertEqual(self.browser.find_element_by_id('id_group_name').get_attribute('value'), "Pessoas")
-		self.assertEqual(self.browser.find_element_by_id('id_group_alias').get_attribute('value'), "chatos")
-		self.assertEqual(self.browser.find_element_by_id('id_group_tags').get_attribute('value'), "tag_igual;")
-		self.assertEqual(self.browser.find_element_by_id('id_group_description').text, "Nao sei")
+		self.assertEqual(slefget_group_name_input_box().get_attribute('value'), "Pessoas")
+		self.assertEqual(self.get_group_alias_input_box().get_attribute('value'), "chatos")
+		self.assertEqual(self.get_group_tags_input_box().get_attribute('value'), "tag_igual;")
+		self.assertEqual(self.get_group_description_input_box().text, "Nao sei")
 
 		# Chico agora lembra de um grupo que tinha visto, e achou que o botao de criar servia para entrar em grupos
 		# Ele criou um grupo com um nome que ja existia

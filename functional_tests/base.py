@@ -25,31 +25,43 @@ class FunctionalTest(StaticLiveServerTestCase):
 	def tearDown(self):
 		self.browser.quit()
 
+	def get_group_name_input_box(self):
+		return self.browser.find_element_by_id('id_name')
+
+	def get_group_alias_input_box(self):
+		return self.browser.find_element_by_id('id_alias')
+
+	def get_group_tags_input_box(self):
+		return self.browser.find_element_by_id('id_tags')
+
+	def get_group_description_input_box(self):
+		return self.browser.find_element_by_id('id_description')
+
 	def createGroupManually(self, name, alias, tags, description):
-		create_group_button = self.browser.find_element_by_id('id_create_group')	
+		create_group_button = self.browser.find_element_by_id('id_create_group')
 		self.assertEqual(
 			create_group_button.get_attribute('type'),
-			'button'			
+			'button'
 			)
 
 		create_group_button.click()
 
-		group_name_input = self.browser.find_element_by_id('id_group_name')
+		group_name_input = self.get_group_name_input_box()
 		group_name_input.send_keys(name)
 
-		group_alias_input = self.browser.find_element_by_id('id_group_alias')
+		group_alias_input = self.get_group_alias_input_box()
 		group_alias_input.send_keys(alias)
 
-		group_tags_input = self.browser.find_element_by_id('id_group_tags')
+		group_tags_input = self.get_group_tags_input_box()
 		group_tags_input.send_keys(tags)
 
-		group_description_input = self.browser.find_element_by_id('id_group_description')
+		group_description_input = self.get_group_description_input_box()
 		group_description_input.send_keys(description)
 
-		create_group_button = self.browser.find_element_by_id('id_create_new_group')		
+		create_group_button = self.browser.find_element_by_id('id_create_new_group')
 		self.assertEqual(
 			create_group_button.get_attribute('type'),
-			'submit'			
+			'submit'
 			)
 		create_group_button.click()
 		self.browser.implicitly_wait(5)
@@ -60,7 +72,7 @@ class FunctionalTest(StaticLiveServerTestCase):
 		sample_group.name = name
 		sample_group.alias = alias
 		sample_group.tags = tags
-		sample_group.description = description 
+		sample_group.description = description
 		sample_group.save()
 
 	def create_sample_user_db(self, access_token, apelido, turma):

@@ -43,6 +43,14 @@
 
 {% block view_main_table %}
 
+<form method="POST" action={% url 'home' %} class="form-horizontal">
+    {{ form }}
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-success" id="id_create_new_group">Submit</button>
+    </div>
+    {% csrf_token %}
+</form>
+
 <div class="row">
     <div class="col-md-6 col-md-offset-3">
         <table id="id_search_list" class="table">
